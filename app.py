@@ -39,7 +39,7 @@ def processRequest(req):
 def makeResponse(req):
     result = req.get("result")
     parameters = result.get("parameters")
-    country = parameters.get("sys.geo-country")
+    country = parameters.get("geo-country")
     print(country)
     return "Test Webhook"
 
