@@ -43,8 +43,11 @@ def makeResponse(req):
     print(country)
     if country == 'United States of America':
         return 'Tech Data (Preferred), Ingram and Apple Direct.'
+    if country == 'Canada':
+        return 'Synnex Canada (Preferred), Ingram Canada and BlueStar Canada (AppleCare exclusively).'
+    if country == 'Europe':
+        return 'cheryl_mepham@shi.com is our Mobility Specialist out of the UK who can help assist.'
     return "Test Webhook"
-
 
 def makeWebhookResult(data):
 
