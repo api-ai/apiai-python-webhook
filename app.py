@@ -40,7 +40,7 @@ def makeResponse(req):
     result = req.get("result")
     parameters = result.get("parameters")
     country = parameters.get("sys.geo-country")
-
+    print(country)
     return "Test Webhook"
 
 
