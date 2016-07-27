@@ -41,6 +41,8 @@ def makeResponse(req):
     parameters = result.get("parameters")
     country = parameters.get("geo-country")
     print(country)
+    if country == 'United States of America':
+        return 'Tech Data (Preferred), Ingram and Apple Direct.'
     return "Test Webhook"
 
 
