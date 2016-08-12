@@ -36,19 +36,31 @@ def webhook():
 
 def processRequest(req):
     if req.get("result").get("action") != "sourceProductsFrom":
+        wellProducts
+        response = makeSourceProductsFromResponse(req)
+        res = makeWebhookResult(response)
+    elif req.get("result").get("action") != "sellDevices":
+        response = makeSellDevicesResponse(req)
+        res = makeWebhookResult(response)
+    else
         return {}
-    response = makeResponse(req)
-    res = makeWebhookResult(response)
     return res
 
-
-def makeResponse(req):
+def makeSellDevicesResponse(req):
+    result = req.get("result")
+    parameters = result.get("parameters")
+    device = parameters.get("device")
+    print(device)
     session = driver.session()
-    session.run("CREATE (n:Person {name:'Bob'})")
-    result = session.run("MATCH (n:Person) RETURN n.name AS name")
+    result = session.run("MATCH (we:Company {alternateName: 'we'})-[:SELLS]->(devices{name: 'Ipad 2'}) RETURN devices.name AS name")
     for record in result:
         print(record["name"])
+        if record["name"] == device:
+            return "We do sell %s! Would you like to buy one?" % device
     session.close()
+    return "Test Webhook"
+
+def makeSourceProductsFromResponse(req):
     result = req.get("result")
     parameters = result.get("parameters")
     country = parameters.get("geo-country")
