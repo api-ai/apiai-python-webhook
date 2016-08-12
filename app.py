@@ -52,7 +52,7 @@ def makeSellDevicesResponse(req):
     print(device)
     session = driver.session()
     query = "MATCH (we:Company {alternateName: 'we'})-[:SELLS]->(devices{name: '%s'}) RETURN devices.name AS name" % device
-    result = session.run()
+    result = session.run(query)
     for record in result:
         print(record["name"])
         if record["name"] == device:
