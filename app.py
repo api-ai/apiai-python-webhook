@@ -3,6 +3,7 @@
 import urllib
 import json
 import os
+from neo4j.v1 import GraphDatabase, basic_auth
 
 from flask import Flask
 from flask import request
@@ -11,6 +12,11 @@ from flask import make_response
 # Flask app should start in global layout
 app = Flask(__name__)
 
+graphenedb_url = os.environ.get("GRAPHENEDB_BOLT_URL")
+graphenedb_user = os.environ.get("GRAPHENEDB_BOLT_USER")
+graphenedb_pass = os.environ.get("GRAPHENEDB_BOLT_PASSWORD")
+
+driver = GraphDatabase.driver(graphenedb_url, auth=basic_auth(graphenedb_user, graphenedb_pass))
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -37,6 +43,12 @@ def processRequest(req):
 
 
 def makeResponse(req):
+    session = driver.session()
+    session.run("CREATE (n:Person {name:'Bob'})")
+    result = session.run("MATCH (n:Person) RETURN n.name AS name")
+    for record in result:
+        print(record["name"])
+    session.close()
     result = req.get("result")
     parameters = result.get("parameters")
     country = parameters.get("geo-country")
