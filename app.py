@@ -53,7 +53,7 @@ def makeSellDevicesResponse(req):
     session = driver.session()
     query = "MATCH (we:Company {alternateName: 'we'})-[:SELLS]->(devices{name: '%s'}) RETURN devices.name AS name" % device
     result = session.run(query)
-    print("Result")
+    print("Result %s " % result)
     for record in result:
         print(record["name"])
         return "We do sell %s! Would you like to buy one?" % device
