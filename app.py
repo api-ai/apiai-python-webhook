@@ -35,13 +35,12 @@ def webhook():
 
 
 def processRequest(req):
-    if req.get("result").get("action") != "sourceProductsFrom":
-        wellProducts
+    if req.get("result").get("action") == "sourceProductsFrom":
         response = makeSourceProductsFromResponse(req)
-        res = makeWebhookResult(response)
-    elif req.get("result").get("action") != "sellDevices":
+        res = makeWebhookResult(response, "sourceProductsFrom")
+    elif req.get("result").get("action") == "sellDevices":
         response = makeSellDevicesResponse(req)
-        res = makeWebhookResult(response)
+        res = makeWebhookResult(response, "sellDevices")
     else:
         return {}
     return res
@@ -52,7 +51,8 @@ def makeSellDevicesResponse(req):
     device = parameters.get("device")
     print(device)
     session = driver.session()
-    result = session.run("MATCH (we:Company {alternateName: 'we'})-[:SELLS]->(devices{name: 'Ipad 2'}) RETURN devices.name AS name")
+    query = "MATCH (we:Company {alternateName: 'we'})-[:SELLS]->(devices{name: '%s'}) RETURN devices.name AS name" % device
+    result = session.run()
     for record in result:
         print(record["name"])
         if record["name"] == device:
@@ -73,7 +73,7 @@ def makeSourceProductsFromResponse(req):
         return 'cheryl_mepham@shi.com is our Mobility Specialist out of the UK who can help assist.'
     return "Test Webhook"
 
-def makeWebhookResult(data):
+def makeWebhookResult(data, source):
 
     speech = data
 
@@ -85,7 +85,7 @@ def makeWebhookResult(data):
         "displayText": speech,
         # "data": data,
         # "contextOut": [],
-        "source": "sourceProductsFrom"
+        "source": source
     }
 
 
