@@ -42,7 +42,7 @@ def processRequest(req):
     elif req.get("result").get("action") != "sellDevices":
         response = makeSellDevicesResponse(req)
         res = makeWebhookResult(response)
-    else
+    else:
         return {}
     return res
 
