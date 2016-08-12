@@ -12,9 +12,9 @@ from flask import make_response
 # Flask app should start in global layout
 app = Flask(__name__)
 
-graphenedb_url = os.environ.get("GRAPHENEDB_BOLT_URL")
-graphenedb_user = os.environ.get("GRAPHENEDB_BOLT_USER")
-graphenedb_pass = os.environ.get("GRAPHENEDB_BOLT_PASSWORD")
+graphenedb_url = os.environ.get("GRAPHENEDB_WHITE_BOLT_URL")
+graphenedb_user = os.environ.get("GRAPHENEDB_WHITE_BOLT_USER")
+graphenedb_pass = os.environ.get("GRAPHENEDB_WHITE_BOLT_PASSWORD")
 
 driver = GraphDatabase.driver(graphenedb_url, auth=basic_auth(graphenedb_user, graphenedb_pass))
 
