@@ -59,7 +59,7 @@ def makeSellDevicesResponse(req):
     resultDB = list(session.run(query))
     session.close()
     for record in resultDB:
-        variable = "We do sell %s! Would you like to buy one?" % record["name"]
+        variable = "%s do sell %s! Would you like to buy one?" % (company, record["name"])
     return variable
 
 def makeSourceProductsFromResponse(req):
