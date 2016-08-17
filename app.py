@@ -51,10 +51,11 @@ def makeSellDevicesResponse(req):
     device = parameters.get("device")
     company = parameters.get("company")
     print(device)
-    session = driver.session()
+    print(company)
     query = "MATCH (comp:Company {alternateName: '%s'})-[:SELLS]->(devices{name: '%s'}) RETURN devices.name AS name" % company, device
     print(query)
     variable = "Webhook didn't work "
+    session = driver.session()
     resultDB = list(session.run(query))
     session.close()
     for record in resultDB:
