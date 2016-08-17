@@ -57,7 +57,7 @@ def makeSellDevicesResponse(req):
     resultDB = session.run(query)
     for record in resultDB:
         print("inside")
-        print(resultDB["name"])
+        print("did we find the ipad? ", resultDB['name'])
         variable = "We do sell %s! Would you like to buy one?" % device
         print(variable)
     session.close()
