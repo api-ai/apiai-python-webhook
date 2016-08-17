@@ -57,7 +57,9 @@ def makeSellDevicesResponse(req):
     resultDB = list(session.run(query))
     print(resultDB)
     print("new keys")
-    print(GRAPHENEDB_WHITE_BOLT_URL)
+    print(graphenedb_url)
+    print(graphenedb_user)
+    print(graphenedb_pass)
     print(resultDB.single())
     for record in resultDB:
         print("inside")
