@@ -65,6 +65,8 @@ def makeSellDevicesResponse(req):
     print(graphenedb_pass)
     for record in resultDB:
         print("inside")
+        print("did we find the ipad?", resultDB['name'])
+        variable = "We do sell %s! Would you like to buy one?" % device
     return variable
 
 def makeSourceProductsFromResponse(req):
