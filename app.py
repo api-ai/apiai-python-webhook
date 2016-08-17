@@ -51,19 +51,15 @@ def makeSellDevicesResponse(req):
     device = parameters.get("device")
     print(device)
     session = driver.session()
-    query = "MATCH (we:Company {alternateName: 'we'})-[:SELLS]->(devices{name: '%s'}) RETURN devices.name AS name" % device
-    # query = "MATCH (n) RETURN n LIMIT 25"
+    query = "MATCH (we:Company {alternateName: 'we'})-[:SELLS]->(devices{name: '%s'}) RETURN devices.name" % device
     print(query)
     variable = "Didn't work Webhook"
-    resultDB = list(session.run(query))
-    print(resultDB)
-    print("new keys")
-    print(graphenedb_url)
-    print(graphenedb_user)
-    print(graphenedb_pass)
+    resultDB = session.run(query)
     for record in resultDB:
         print("inside")
-        print(record['name'])
+        print(resultDB["name"])
+        variable = "We do sell %s! Would you like to buy one?" % device
+        break
     session.close()
     return variable
 
