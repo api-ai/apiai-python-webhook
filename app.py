@@ -59,7 +59,7 @@ def makeSellDevicesResponse(req):
         print("inside")
         print(resultDB["name"])
         variable = "We do sell %s! Would you like to buy one?" % device
-        break
+        print(variable)
     session.close()
     return variable
 
