@@ -51,7 +51,7 @@ def makeSellDevicesResponse(req):
     device = parameters.get("device")
     print(device)
     session = driver.session()
-    query = "MATCH (we:Company {alternateName: 'we'})-[:SELLS]->(devices{name: '%s'}) RETURN devices.name" % device
+    query = "MATCH (we:Company {alternateName: 'we'})-[:SELLS]->(devices{name: '%s'}) RETURN devices.name AS name" % device
     print(query)
     variable = "Didn't work Webhook"
     resultDB = session.run(query)
