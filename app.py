@@ -52,8 +52,8 @@ def makeSellDevicesResponse(req):
     print(device)
     session = driver.session()
     query = "MATCH (we:Company {alternateName: 'we'})-[:SELLS]->(devices{name: '%s'}) RETURN devices.name AS name" % device
-    query = "MATCH (n) RETURN n LIMIT 25"
-    query = "MATCH (devices:Device) RETURN devices.name LIMIT 10"
+    # query = "MATCH (n) RETURN n LIMIT 25"
+    # query = "MATCH (devices:Device) RETURN devices.name LIMIT 10"
     print(query)
     variable = "Didn't work Webhook"
     resultDB = list(session.run(query))
