@@ -54,10 +54,11 @@ def makeSellDevicesResponse(req):
     query = "MATCH (we:Company {alternateName: 'we'})-[:SELLS]->(devices{name: '%s'}) RETURN devices.name AS name" % device
     print(query)
     variable = "Didn't work Webhook"
-    resultDB = session.run(query)
+    resultDB = list(session.run(query))
     print(resultDB)
     print("new keys")
-    print(resultDB.keys())
+    print(GRAPHENEDB_WHITE_BOLT_URL)
+    print(resultDB.single())
     for record in resultDB:
         print("inside")
     session.close()
