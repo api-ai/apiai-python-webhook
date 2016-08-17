@@ -52,12 +52,13 @@ def makeSellDevicesResponse(req):
     print(device)
     session = driver.session()
     query = "MATCH (we:Company {alternateName: 'we'})-[:SELLS]->(devices{name: '%s'}) RETURN devices.name AS name" % device
+    variable = "Didn't work Webhook"
     for record in session.run(query):
         print("inside")
         print(record["name"])
-        return "We do sell %s! Would you like to buy one?" % device
+        variable = "We do sell %s! Would you like to buy one?" % device
     session.close()
-    return "Test Webhook"
+    return variable
 
 def makeSourceProductsFromResponse(req):
     result = req.get("result")
