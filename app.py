@@ -15,6 +15,9 @@ app = Flask(__name__)
 graphenedb_url = os.environ.get("GRAPHENEDB_WHITE_BOLT_URL")
 graphenedb_user = os.environ.get("GRAPHENEDB_WHITE_BOLT_USER")
 graphenedb_pass = os.environ.get("GRAPHENEDB_WHITE_BOLT_PASSWORD")
+print(graphenedb_url)
+print(graphenedb_user)
+print(graphenedb_pass)
 
 driver = GraphDatabase.driver(graphenedb_url, auth=basic_auth(graphenedb_user, graphenedb_pass))
 
