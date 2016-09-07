@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Popoto Search</title>
+
+    <!-- Add Popoto default CSS styles -->
+    <link rel="stylesheet" href="css/popoto.min.css">
+    <script src="js/analytics.js"></script>
+</head>
+<body class="ppt-body">
+
+<header class="ppt-header"></header>
+
+<section class="ppt-section-main" style="height: 800px">
+    <div class="ppt-section-header">
+        <span class="ppt-header-span">Neo4j movie graph -</span> Cypher viewer example
+    </div>
+
+    <!-- By default the graph is generated on the HTML element with ID "popoto-graph"
+     If needed this id can be modified with property "popoto.graph.containerId" -->
+
+    <div id="popoto-graph" class="ppt-div-graph">
+        <!-- Graph is generated here -->
+    </div>
+
+    <!-- By default the cypher viewer is generated on the HTML element with ID "popoto-cypher"
+     If needed this id can be modified with property "popoto.cypherviewer.containerId" -->
+
+    <div id="popoto-cypher" class="ppt-container-cypher">
+        <!-- Cypher query viewer will be generated here -->
+    </div>
+
+</section>
+
+<!-- Required scripts -->
+<script src="js/jquery-2.1.0.min.js" charset="utf-8"></script>
+<script src="js/d3.v3.min.js" charset="utf-8"></script>
+<script src="js/popoto.min.js" charset="utf-8"></script>
+<script>
+
+    popoto.rest.CYPHER_URL = "http://app5505001242pigb.sb10.stations.graphenedb.com:24789/db/data/transaction/commit";
+    popoto.rest.AUTHORIZATION = "Basic YXBwNTUwNTAwMTItQ252WGxnOnd3WUVVUW9hSXlNdjEzUzg0Qllk";
+
+    // Define the list of label provider to customize the graph behavior:
+    // Only two labels are used in Neo4j movie graph example: "Movie" and "Person"
+    popoto.provider.nodeProviders = {
+        "Company": {
+            "returnAttributes": ["name", "alternateName"],
+            "constraintAttribute": "name"
+        },
+        "Device": {
+            "returnAttributes": ["name"],
+            "constraintAttribute": "name"
+        }
+    };
+
+    // Define the label provider used to customize the link displayed text:
+    popoto.provider.linkProvider = {
+
+        // Customize the text displayed on links:
+        "getLinkTextValue": function (link) {
+
+            // The links labels are just changed in lower case in this example.
+            // But it is possible to use a localization mechanism here to replace values.
+            if (link.type === popoto.graph.link.LinkTypes.RELATION) {
+                switch (link.label) {
+                    case "SELLS":
+                        return "sells";
+                    case "SERVICED_BY":
+                        return "service by";
+                    case "OFFERED_IN":
+                        return "offered in";
+                    case "HAS_PRESENCE_IN":
+                        return "present in";
+                    case "SOLD_IN":
+                        return "sold in";
+                    default :
+                        return "Unexpected relation"
+                }
+            } else { // Value links
+
+                // It is also possible to use data from link source or target nodes.
+                // Here if the target node of a link is a Movie, the tagline attribute of the movie is displayed on link.
+                if (link.target.label == "Company") {
+                    return link.target.attributes.tagline;
+                }
+
+            }
+        }
+    };
+
+    // Start the generation using parameter as root label of the query.
+    popoto.start("Company");
+
+</script>
+</body>
+</html>
