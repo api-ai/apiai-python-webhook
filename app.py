@@ -97,9 +97,14 @@ def makeWebhookResult(data, source):
     }
 
 def answer(req):
+
+    print("testing for offeringTriple")
+
     source = "offeringTriple"
     if req.get("result").get("action") != source:
         return None
+
+    print("running offeringTriple")
 
     print("Request:")
     print(json.dumps(req, indent=4))
