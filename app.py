@@ -97,22 +97,15 @@ def makeWebhookResult(data, source):
     }
 
 def answer(req):
-
-    print("testing for offeringTriple")
-
     source = "offeringTriple"
     if req.get("result").get("action") != source:
         return None
-
-    print("running offeringTriple with response")
 
     offering = req.get("result").get("parameters").get("offering")
     product = req.get("result").get("parameters").get("product")
     vendor = req.get("result").get("parameters").get("vendor")
 
-    speech = "How should I know? If you want %s to %s you %ss, go ask them." % (vendor, offering, product)
-    print("Request:")
-    print(json.dumps(req, indent=4))
+    speech = "All of our representatives are busy. If you want %s to %s your %ss, you should ask them." % (vendor, offering, product)
 
     res = {
         "speech": speech,
