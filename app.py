@@ -104,7 +104,7 @@ def answer(req):
     if req.get("result").get("action") != source:
         return None
 
-    print("running offeringTriple")
+    print("running offeringTriple with response")
 
     print("Request:")
     print(json.dumps(req, indent=4))
@@ -115,9 +115,7 @@ def answer(req):
         "source": source
     }
 
-    r = make_response(res)
-    r.headers['Content-Type'] = 'application/json'
-    return r
+    return res
 
 
 if __name__ == '__main__':
