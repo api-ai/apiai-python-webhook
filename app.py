@@ -46,9 +46,13 @@ def processRequest(req):
         response = makeSellDevicesResponse(req)
         res = makeWebhookResult(response, "sellDevices")
     #each function tests the request and returns data if it is the handler
-    r = answer(req)
-    if r != None:
-        return r
+    try:
+        r = answer(req)
+        if r != None:
+            return r
+    except: RuntimeError as err:
+        print "An error occurred: ({0}): {1}".format(e.errno, e.strerror)
+
     return res
 
 def makeSellDevicesResponse(req):
