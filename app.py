@@ -47,7 +47,7 @@ def processRequest(req):
         res = makeWebhookResult(response, "sellDevices")
     #each function tests the request and returns data if it is the handler
     try:
-        print("In try/except:")
+        print("In try/Exception:")
 
         r = answer(req)
         if r != None:
