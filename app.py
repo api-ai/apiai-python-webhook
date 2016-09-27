@@ -47,13 +47,10 @@ def processRequest(req):
         res = makeWebhookResult(response, "sellDevices")
     #each function tests the request and returns data if it is the handler
     try:
-        print("In try/Exception:")
-
         r = answer(req)
         if r != None:
             return r
     except Exception as err:
-#        print "An error occurred: ({0}): {1}".format(err.errno, err.strerror)
         print("Error %s:" % (str(err)) )
 
     return res
@@ -121,7 +118,7 @@ def answer(req):
     session = driver.session()
     resultDB = list(session.run(query))
     session.close()
-    print("query returned %d items" % (resultDB.len()))
+    print("query returned %d items" % (len(resultDB)) )
     for record in resultDB:
         speech += "%s do %s %s! Would you like to buy one?" % (vendor, offering, record["name"])
 
