@@ -21,6 +21,10 @@ print(graphenedb_pass)
 
 driver = GraphDatabase.driver(graphenedb_url, auth=basic_auth(graphenedb_user, graphenedb_pass))
 
+@app.route('/')
+def home():
+    return render_template('index.html')
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     req = request.get_json(silent=True, force=True)
