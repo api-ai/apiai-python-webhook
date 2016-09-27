@@ -106,6 +106,16 @@ def answer(req):
     vendor = req.get("result").get("parameters").get("vendor")
 
     speech = "All of our representatives are busy. If you want %s to %s your %ss, you should ask them." % (vendor, offering, product)
+    print(speech)
+    speech = "Accessing... "
+
+    query = "MATCH (comp:Company {alternateName: '%s'})-[:SELLS]->(devices{name: '%s'}) RETURN devices.name AS name" % (company, device)
+    print(query)
+    session = driver.session()
+    resultDB = list(session.run(query))
+    session.close()
+    for record in resultDB:
+        speech += "%s do %s %s! Would you like to buy one?" % (vendor, offering, record["name"])
 
     res = {
         "speech": speech,
