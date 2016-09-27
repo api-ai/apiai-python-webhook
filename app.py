@@ -51,7 +51,7 @@ def processRequest(req):
         if r != None:
             return r
     except RuntimeError as err:
-        print "An error occurred: ({0}): {1}".format(e.errno, e.strerror)
+        print "An error occurred: ({0}): {1}".format(err.errno, err.strerror)
 
     return res
 
