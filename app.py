@@ -38,6 +38,7 @@ def webhook():
 
 
 def processRequest(req):
+    res = {}
     if req.get("result").get("action") == "sourceProductsFrom":
         response = makeSourceProductsFromResponse(req)
         res = makeWebhookResult(response, "sourceProductsFrom")
@@ -45,9 +46,9 @@ def processRequest(req):
         response = makeSellDevicesResponse(req)
         res = makeWebhookResult(response, "sellDevices")
     #each function tests the request and returns data if it is the handler
-    elif (res = answer(req)) != None:
-    else:
-        return {}
+    r = answer(req)
+    if r != None:
+        return r
     return res
 
 def makeSellDevicesResponse(req):
