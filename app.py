@@ -53,7 +53,8 @@ def processRequest(req):
         if r != None:
             return r
     except Exception as err:
-        print "An error occurred: ({0}): {1}".format(err.errno, err.strerror)
+#        print "An error occurred: ({0}): {1}".format(err.errno, err.strerror)
+        print("Error! Error!")
 
     return res
 
