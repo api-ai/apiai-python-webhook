@@ -114,6 +114,7 @@ def answer(req):
     session = driver.session()
     resultDB = list(session.run(query))
     session.close()
+    print("query returned %d items" % (resultDB.len()))
     for record in resultDB:
         speech += "%s do %s %s! Would you like to buy one?" % (vendor, offering, record["name"])
 
