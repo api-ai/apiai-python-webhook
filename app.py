@@ -106,11 +106,16 @@ def answer(req):
 
     print("running offeringTriple with response")
 
+    offering = req.get("result").get("parameters").get("offering")
+    product = req.get("result").get("parameters").get("product")
+    vendor = req.get("result").get("parameters").get("vendor")
+
+    speech = "How should I know? If you want %s to %s you %ss, go ask them." % (vendor, offering, product)
     print("Request:")
     print(json.dumps(req, indent=4))
 
     res = {
-        "speech": "The answer is 42",
+        "speech": speech,
         "displayText": "The displayText is the answer",
         "source": source
     }
