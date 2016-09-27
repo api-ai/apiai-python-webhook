@@ -44,6 +44,8 @@ def processRequest(req):
     elif req.get("result").get("action") == "sellDevices":
         response = makeSellDevicesResponse(req)
         res = makeWebhookResult(response, "sellDevices")
+    #each function tests the request and returns data if it is the handler
+    elif (res = answer(req)) != None:
     else:
         return {}
     return res
@@ -92,6 +94,24 @@ def makeWebhookResult(data, source):
         # "contextOut": [],
         "source": source
     }
+
+def answer(req):
+    source = "offeringTriple"
+    if req.get("result").get("action") != source:
+        return None
+
+    print("Request:")
+    print(json.dumps(req, indent=4))
+
+    res = {
+        "speech": "The answer is 42",
+        "displayText": "The displayText is the answer",
+        "source": source
+    }
+
+    r = make_response(res)
+    r.headers['Content-Type'] = 'application/json'
+    return r
 
 
 if __name__ == '__main__':
