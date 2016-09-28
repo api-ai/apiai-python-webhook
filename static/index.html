@@ -5,6 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
     <title>Popoto Search</title>
     <link rel="stylesheet" href="css/popoto.min.css">
+    <link rel="stylesheet" href="css/exprtio.css">
 </head>
 <body class="ppt-body">
 
@@ -12,6 +13,14 @@
 </header>
 
 <section class="ppt-section-main">
+    <div class="ppt-section-header">
+        <span class="ppt-header-span">Query</span> <input id="exprt-query-input" size="80" onchange="EXPRTIO.handleQueryInput(this)">
+    </div>
+
+    <div class="ppt-section-header">
+        <span class="ppt-header-span">Response</span> <span id="exprt-response"> ... </span>
+    </div>
+
     <div class="ppt-section-header">
         <span class="ppt-header-span">Graph</span> search
     </div>
@@ -53,6 +62,7 @@
 
 <script src="js/d3.v3.min.js" charset="utf-8"></script>
 <script src="js/popoto.min.js" charset="utf-8"></script>
+<script src="js/exprtio.js" charset="utf-8"></script>
 
 <script>
     /**

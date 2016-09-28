@@ -10,6 +10,7 @@ from flask import request
 from flask import make_response
 from flask import render_template
 from flask import send_from_directory
+from flask import send_static_file
 
 # Flask app should start in global layout
 app = Flask(__name__)
@@ -25,15 +26,11 @@ driver = GraphDatabase.driver(graphenedb_url, auth=basic_auth(graphenedb_user, g
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return app.send_static_file('static/index.html')
 
-@app.route('/js/<path:path>')
+@app.route('/static/<path:path>')
 def send_js(path):
-    return send_from_directory('js', path)
-
-@app.route('/css/<path:path>')
-def send_css(path):
-    return send_from_directory('css', path)
+    return send_from_directory('static', path)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
