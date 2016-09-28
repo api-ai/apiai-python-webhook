@@ -103,8 +103,9 @@ EXPRTIO.handleKnowledgeInput = function(field) {
     var product = knowledgeWords.join(" ");
 
     EXPRTIO.extendEntity("vendor", vendor);
-//    EXPRTIO.extendEntity("offering", offering);
+    EXPRTIO.extendEntity("offering", offering);
     EXPRTIO.extendEntity("product", product);
+    field.value = "";
 }
 
 EXPRTIO.changeOnEnter = function(event) {
