@@ -5,3 +5,13 @@
     font-size: 14px;
     margin: 8px;
 }
+
+.auto-height {
+    height: auto;
+}
+
+.exprtio-response {
+    line-height: 30px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
