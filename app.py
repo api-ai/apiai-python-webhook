@@ -10,7 +10,6 @@ from flask import request
 from flask import make_response
 from flask import render_template
 from flask import send_from_directory
-from flask import send_static_file
 
 # Flask app should start in global layout
 app = Flask(__name__)
