@@ -23,14 +23,6 @@ print(graphenedb_pass)
 
 driver = GraphDatabase.driver(graphenedb_url, auth=basic_auth(graphenedb_user, graphenedb_pass))
 
-@app.route('/')
-def home():
-    return app.send_static_file('static/index.html')
-
-@app.route('/static/<path:path>')
-def send_js(path):
-    return send_from_directory('static', path)
-
 @app.route('/webhook', methods=['POST'])
 def webhook():
     req = request.get_json(silent=True, force=True)
@@ -46,6 +38,9 @@ def webhook():
     r.headers['Content-Type'] = 'application/json'
     return r
 
+@app.route('/<path:path>')
+def send_js(path):
+    return send_from_directory('static', path)
 
 def processRequest(req):
     res = {}
