@@ -35,7 +35,8 @@ def processRequest(req):
     yql_query = makeYqlQuery(req)
     if yql_query is None:
         return {}
-    yql_url = baseurl + urllib.urlencode({'q': yql_query}) + "&format=json"
+    #yql_url = baseurl + urllib.urlencode({'q': yql_query}) + "&format=json"
+    yql_yrl = http://data.asx.com.au/data/1/share/BHP/
     result = urllib.urlopen(yql_url).read()
     data = json.loads(result)
     res = makeWebhookResult(data)
@@ -77,8 +78,10 @@ def makeWebhookResult(data):
 
     # print(json.dumps(item, indent=4))
 
-    speech = "Today in " + location.get('city') + ": " + condition.get('text') + \
-             ", the temperature is " + condition.get('temp') + " " + units.get('temperature')
+    #speech = "Today in " + location.get('city') + ": " + condition.get('text') + \
+    #         ", the temperature is " + condition.get('temp') + " " + units.get('temperature')
+    
+    speech = "The share details are: code = " + get('code') "last price = " + get('last_price')
 
     print("Response:")
     print(speech)
