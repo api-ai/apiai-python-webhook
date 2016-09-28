@@ -8,6 +8,7 @@ from neo4j.v1 import GraphDatabase, basic_auth
 from flask import Flask
 from flask import request
 from flask import make_response
+from flask import render_template
 
 # Flask app should start in global layout
 app = Flask(__name__)
