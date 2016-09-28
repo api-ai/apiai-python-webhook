@@ -14,7 +14,7 @@
 
 <section class="ppt-section-main">
     <div class="ppt-section-header">
-        <span class="ppt-header-span">Query</span> <input id="exprt-query-input" size="80" onchange="EXPRTIO.handleQueryInput(this)">
+        <span class="ppt-header-span">Query</span> <input id="exprt-query-input" size="80" onchange="EXPRTIO.handleQueryInput(this)" onkeyup="EXPRTIO.changeOnEnter(event)">
     </div>
 
     <div class="ppt-section-header auto-height exprtio-response">
@@ -49,6 +49,10 @@
 
     <div id="popoto-results" class="ppt-container-results">
         <!-- Results will be generated here -->
+    </div>
+
+    <div class="ppt-section-header">
+        <span class="ppt-header-span">Knowledge Entry</span> <input id="exprt-query-input" size="80" onchange="EXPRTIO.handleKnowledgeInput(this)" onkeyup="EXPRTIO.changeOnEnter(event)">
     </div>
 
 </section>
