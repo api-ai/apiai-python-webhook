@@ -122,7 +122,7 @@ def answer(req):
     print(speech)
     speech = "Accessing... "
 
-    query = "MATCH (comp:Company {alternateName: '%s'})-[:SELLS]->(devices{name: '%s'}) RETURN devices.name AS name" % (vendor, product)
+    query = "MATCH (comp:Company {name: '%s'})-[:%s]->(devices{name: '%s'}) RETURN devices.name AS name" % (vendor, offering, product)
     print(query)
     session = driver.session()
     resultDB = list(session.run(query))
