@@ -120,7 +120,7 @@ def answer(req):
 
     speech = "All of our graph representatives are busy. If you want %s to %s your %ss, you should ask them." % (vendor, offering, product)
     print(speech)
-    speech = "Accessing... "
+    speech = "💡 "
 
     query = "MATCH (comp:Company {name: '%s'})-[:%s]->(devices{name: '%s'}) RETURN devices.name AS name" % (vendor, offering, product)
     print(query)
@@ -129,7 +129,7 @@ def answer(req):
     session.close()
     print("The query returned %d items" % (len(resultDB)) )
     for record in resultDB:
-        speech += "%s do %s %s! Would you like to buy one?" % (vendor, offering, record["name"])
+        speech += "%s does %s %s! Would you like to buy one?" % (vendor, offering, record["name"])
 
     res = {
         "speech": speech,
