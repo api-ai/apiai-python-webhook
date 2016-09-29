@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import urllib
 import json
@@ -121,7 +120,7 @@ def answer(req):
 
     speech = "All of our graph representatives are busy. If you want %s to %s your %ss, you should ask them." % (vendor, offering, product)
     print(speech)
-    speech = "💡 "
+    speech = ": "
 
     query = "MATCH (comp:Company {name: '%s'})-[:%s]->(devices{name: '%s'}) RETURN devices.name AS name" % (vendor, offering, product)
     print(query)
