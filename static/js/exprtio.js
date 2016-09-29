@@ -2,6 +2,10 @@ EXPRTIO = { }
 
 EXPRTIO.apiaiurl = "https://api.api.ai/v1";
 
+EXPRTIO.CYPHER_URL = "http://app5505001242pigb.sb10.stations.graphenedb.com:24789/db/data/transaction/commit";
+
+EXPRTIO.CYPHER_AUTH = "Basic YXBwNTUwNTAwMTItQ252WGxnOnd3WUVVUW9hSXlNdjEzUzg0Qllk";
+
 EXPRTIO.entities = [ ];
 
 EXPRTIO.query = function(text, callback) {
@@ -93,6 +97,32 @@ EXPRTIO.extendEntity = function(entityName, entity) {
     });
 }
 
+EXPRTIO.graphCall = function(data) {
+    jQuery.ajax({
+        url: EXPRTIO.CYPHER_URL,
+        type: 'post',
+        data: JSON.stringify(data),
+        headers: {
+            Authorization: EXPRTIO.CYPHER_AUTH
+        },
+        dataType: "json",
+        contentType: "application/json",
+        success: function (data) {
+            console.info(data);
+        }
+    });
+}
+
+EXPRTIO.createGraphKnowledge = function(vendor, offering, product) {
+    var statement = "MERGE (VENDOR:Company {name:'" + vendor + "'}) MERGE (PRODUCT:Device {name:'" + product + "'}) CREATE (VENDOR)-[:"+offering+"]->(PRODUCT)";
+    var statements = [{statement: statement}];
+
+    var data = {
+        statements: statements
+    };
+    EXPRTIO.graphCall(data);
+}
+
 EXPRTIO.handleKnowledgeInput = function(field) {
     if (EXPRTIO.debounce()) {
         return;
@@ -105,6 +135,7 @@ EXPRTIO.handleKnowledgeInput = function(field) {
     EXPRTIO.extendEntity("vendor", vendor);
     EXPRTIO.extendEntity("offering", offering);
     EXPRTIO.extendEntity("product", product);
+    EXPRTIO.createGraphKnowledge(vendor, offering, product);
     field.value = "";
 }
 
