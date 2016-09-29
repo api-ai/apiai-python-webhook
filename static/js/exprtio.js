@@ -6,6 +6,10 @@ EXPRTIO.CYPHER_URL = "http://app5505001242pigb.sb10.stations.graphenedb.com:2478
 
 EXPRTIO.CYPHER_AUTH = "Basic YXBwNTUwNTAwMTItQ252WGxnOnd3WUVVUW9hSXlNdjEzUzg0Qllk";
 
+EXPRTIO.APIAI_CLIENTAUTH = "Bearer 43ab7b832fb1437abf82f2a77a1d5952";
+
+EXPRTIO.APIAI_DEVAUTH = "Bearer 69d4385715ae43568cdd9e75b92afdcc";
+
 EXPRTIO.entities = [ ];
 
 EXPRTIO.query = function(text, callback) {
@@ -14,17 +18,17 @@ EXPRTIO.query = function(text, callback) {
         "lang": "en",
     };
     jQuery.ajax({
-        url: EXPRTIO.apiaiurl + "/query",
+        url: EXPRTIO.apiaiurl + "/query?v=20150910",
         type: 'post',
         data: JSON.stringify(data),
         headers: {
-            Authorization: "Bearer 43ab7b832fb1437abf82f2a77a1d5952"
+            Authorization: EXPRTIO.APIAI_CLIENTAUTH
         },
         dataType: "json",
         contentType: "application/json",
         success: function (data) {
             console.info(data);
-            callback(data.result.speech);
+            callback(data.result.fulfillment.speech);
         }
     });
 }
