@@ -129,7 +129,7 @@ def answer(req):
     session.close()
     print("The query returned %d items" % (len(resultDB)) )
     if len(resultDB) == 0 :
-        speech += "Sorry, %s doesn't %s %s." % (vendor, offering, record["name"])
+        speech += "Sorry, %s doesn't %s %s." % (vendor, offering, product)
 
     for record in resultDB:
         speech += "%s does %s %s! Would you like to buy one?" % (vendor, offering, record["name"])
