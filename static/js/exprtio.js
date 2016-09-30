@@ -65,6 +65,26 @@ EXPRTIO.refreshEntities = function() {
         success: function (data) {
             console.info(data);
             EXPRTIO.entities = data;
+            for (i in EXPRTIO.entities) {
+                var entity = EXPRTIO.entities[i];
+                EXPRTIO.refreshEntity(entity);
+            }
+        }
+    });
+}
+
+EXPRTIO.refreshEntity = function(entity, callback) {
+    jQuery.ajax({
+        url: EXPRTIO.apiaiurl + "/entities/" + entity.name,
+        type: 'get',
+        headers: {
+            Authorization: EXPRTIO.APIAI_DEVAUTH
+        },
+        dataType: "json",
+        contentType: "application/json",
+        success: function (data) {
+            console.info(data);
+            entity.entries = data.entries;
         }
     });
 }
@@ -76,6 +96,35 @@ EXPRTIO.getEntityId = function(entityName) {
             return entity.id;
         }
     }
+}
+
+//build a synonym-mapping hash table to optimize this
+EXPRTIO.normalizeEntity = function(entityValue, entityName) {
+    for (var i in EXPRTIO.entities) {
+        var entity = EXPRTIO.entities[i];
+        if (entityName && (entity.name != entityName)) {
+            continue;
+        }
+        var scopedValue = EXPRTIO.normalizeScopedEntity(entityValue, entity);
+        if (scopedValue) {
+            return scopedValue;
+        }
+    }
+
+    return entityValue;
+}
+
+EXPRTIO.normalizeScopedEntity = function(entityValue, entity) {
+    for (var j in entity.entries) {
+        var entry = entity.entries[j];
+        for (var k in entry.synonyms) {
+            var synonym = entry.synonyms[k];
+            if (synonym.toLowerCase() == entityValue.toLowerCase()) {
+                return entry.value;
+            }
+        }
+    }
+    return null;
 }
 
 EXPRTIO.extendEntity = function(entityName, entity) {
@@ -118,6 +167,10 @@ EXPRTIO.graphCall = function(data) {
 }
 
 EXPRTIO.createGraphKnowledge = function(vendor, offering, product) {
+    vendor = EXPRTIO.normalizeEntity(vendor, "vendor");
+    offering = EXPRTIO.normalizeEntity(offering, "offering");
+    product = EXPRTIO.normalizeEntity(product, "product");
+
     var statement = "MERGE (VENDOR:Company {name:'" + vendor + "'}) MERGE (PRODUCT:Device {name:'" + product + "'}) CREATE (VENDOR)-[:"+offering+"]->(PRODUCT)";
     var statements = [{statement: statement}];
 
