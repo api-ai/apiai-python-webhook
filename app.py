@@ -182,7 +182,7 @@ def grapheneQuery(query):
     resultDB = session.run(query)
     session.close()
     for record in resultDB:
-        print("record %s %s" % (record["title"], record["name"]))
+        print(record)
     return resultDB
 
 if __name__ == '__main__':
