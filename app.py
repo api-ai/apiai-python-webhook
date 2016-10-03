@@ -59,6 +59,9 @@ def processRequest(req):
         r = answer(req)
         if r != None:
             return r
+        r = answerHow(req)
+        if r != None:
+            return r
     except Exception as err:
         print("Error %s:" % (str(err)) )
 
@@ -142,6 +145,21 @@ def answer(req):
 
     return res
 
+def answerHow(req):
+    source = "offeringPath"
+    if req.get("result").get("action") != source:
+        return None
+
+    speech = "How on earth?"
+
+    res = {
+        "speech": speech,
+        "displayText": speech,
+        "source": source
+    }
+
+    return res
+}
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
