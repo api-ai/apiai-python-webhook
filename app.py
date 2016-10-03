@@ -159,7 +159,6 @@ def answerHow(req):
     }
 
     return res
-}
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
