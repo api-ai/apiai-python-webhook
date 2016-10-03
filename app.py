@@ -181,6 +181,7 @@ def grapheneQuery(query):
     session = driver.session()
     resultDB = session.run(query)
     session.close()
+    print(resultDB)
     return resultDB
 
 if __name__ == '__main__':
