@@ -159,9 +159,10 @@ def answerHow(req):
 
     speech = "How on earth?"
 
-    if len(resultDB) == 0 :
+    if len(resultDB) == 0:
         speech += " Sorry, %s doesn't %s %s." % (vendor, offering, anything)
-
+    else:
+        print(resultDB)
 
     for record in resultDB:
         print(record)
