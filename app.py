@@ -179,7 +179,7 @@ def answerHow(req):
 def grapheneQuery(query):
     print(query)
     session = driver.session()
-    resultDB = list(session.run(query))
+    resultDB = session.run(query)
     session.close()
     return resultDB
 
