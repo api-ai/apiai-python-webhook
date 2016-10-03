@@ -160,9 +160,11 @@ def answerHow(req):
     speech = "How on earth?"
 
     if len(resultDB) == 0 :
-        speech += "Sorry, %s doesn't %s %s." % (vendor, offering, anything)
+        speech += " Sorry, %s doesn't %s %s." % (vendor, offering, anything)
+
 
     for record in resultDB:
+        print(record)
         speech += "%s does %s %s! Would you like them to?" % (vendor, offering, record["name"])
 
     res = {
