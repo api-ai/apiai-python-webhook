@@ -183,7 +183,7 @@ def grapheneQuery(query):
     session.close()
     print(resultDB.keys())
     for record in resultDB:
-        print(record.asMap())
+        print(record.values())
     return resultDB
 
 if __name__ == '__main__':
