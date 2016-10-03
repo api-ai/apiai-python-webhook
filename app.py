@@ -150,7 +150,20 @@ def answerHow(req):
     if req.get("result").get("action") != source:
         return None
 
+    offering = req.get("result").get("parameters").get("offering")
+    anything = req.get("result").get("parameters").get("anything")
+    vendor = req.get("result").get("parameters").get("vendor")
+
+    query = "MATCH (comp:Company {name: '%s'})-[r*]->(offerer)-[s:%s]->(anything{name: '%s'}) RETURN r, s" % (vendor, offering, anything)
+    resultDB = grapheneQuery(query)
+
     speech = "How on earth?"
+
+    if len(resultDB) == 0 :
+        speech += "Sorry, %s doesn't %s %s." % (vendor, offering, anything)
+
+    for record in resultDB:
+        speech += "%s does %s %s! Would you like them to?" % (vendor, offering, record["name"])
 
     res = {
         "speech": speech,
@@ -159,6 +172,13 @@ def answerHow(req):
     }
 
     return res
+
+def grapheneQuery(query):
+    print(query)
+    session = driver.session()
+    resultDB = list(session.run(query))
+    session.close()
+    return resultDB
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
