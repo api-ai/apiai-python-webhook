@@ -1,0 +1,70 @@
+MATCH (n) DETACH DELETE n
+
+CREATE (SHI:Company {name:'SHI', city:'Somerset', state:'New Jersey', alternateName:'we', returnPolicy: "SHI has a very strict no returns policy."})
+CREATE (APPLE:Company {name:'Apple', city:'Cupertino', state:'California', alternateName:'Apple', returnPolicy: "Apple has a very strict no returns policy. The only thing that qualifies to be returned is Apple products that arrived DOA/defective, damaged in shipment, and anything that might be considered an Apple configuration error. Everything else, regardless if it’s open-box or still sealed, does not qualify to be returned. You can make return claims through the Apple Reseller Website"})
+
+CREATE (IpadAir2:Device {name:'Ipad Air 2', price:500, resolution:'1536 x 2048 pixels', size: '9.7 inches'})
+CREATE (Ipad3:Device {name:'Ipad 2', price:200, resolution:'1024 x 768 pixels', size: '9.7 inches'})
+CREATE (MacBookPro2016:Device {name:'MacBook Pro 2016', price:1000, resolution:'2304x1440', size: '13 inches'})
+CREATE (Iphone6S:Device {name:'Iphone 6S', price:900, resolution:'1334x750', size: '4.7 inches'})
+
+CREATE (USA:Territory {name:'USA'})
+CREATE (CAD:Territory {name:'Canada'})
+CREATE (EU:Territory {name:'Europe'})
+
+CREATE (Screen:Service {name:'Fix Screen'})
+CREATE (Battery:Service {name:'Change Battery'})
+CREATE
+  (SHI)-[:HAS_PRESENCE_IN]->(USA),
+  (SHI)-[:HAS_PRESENCE_IN]->(CAD),
+  (SHI)-[:HAS_PRESENCE_IN]->(EU)
+CREATE
+  (SHI)-[a:SELLS]->(IpadAir2) ,
+  (SHI)-[b:SELLS]->(Ipad3),
+  (SHI)-[c:SELLS]->(MacBookPro2016),
+  (SHI)-[d:SELLS]->(Iphone6S) SET a.answer = "%s can sell %s", b.answer = "%s can sell %s", c.answer = "%s can sell %s", d.answer = "%s can sell %s"
+CREATE
+    (APPLE)-[e:SELLS]->(IpadAir2),
+    (APPLE)-[f:SELLS]->(Ipad3),
+    (APPLE)-[g:SELLS]->(MacBookPro2016),
+    (APPLE)-[h:SELLS]->(Iphone6S) SET e.answer = "%s can sell %s", f.answer = "%s can sell %s", g.answer = "%s can sell %s", h.answer = "%s can sell %s"
+CREATE
+  (Iphone6S)-[:SERVICED_BY]->(Screen),
+  (Iphone6S)-[:SERVICED_BY]->(Battery),
+  (MacBookPro2016)-[:SERVICED_BY]->(Battery)
+CREATE
+  (Battery)-[:OFFERED_IN]->(USA),
+  (Battery)-[:OFFERED_IN]->(CAD)
+CREATE
+  (Iphone6S)-[:SOLD_IN]->(USA),
+  (MacBookPro2016)-[:SOLD_IN]->(CAD)
+
+  CREATE
+    (SHI)-[i:SHIPS_TO]->(USA),
+    (SHI)-[j:SHIPS_TO]->(CAD),
+    (SHI)-[l:SHIPS_TO]->(EU)
+  SET
+    i.answer = "Tech Data (Preferred), Ingram and Apple Direct.",
+    j.answer = "Synnex Canada (Preferred), Ingram Canada and BlueStar Canada (AppleCare exclusively).",
+    l.answer = "cheryl_mepham@shi.com is our Mobility Specialist out of the UK who can help assist."
+
+CREATE (ApplesReturnPolicy:ReturnPolicy { name: "Apple's Return Policy", answer: "Apple has a very strict no returns policy. The only thing that qualifies to be returned is Apple products that arrived DOA/defective, damaged in shipment, and anything that might be considered an Apple configuration error. Everything else, regardless if it’s open-box or still sealed, does not qualify to be returned. You can make return claims through the Apple Reseller Website"})
+CREATE
+  (APPLE)-[:HAS]->(ApplesReturnPolicy)
+
+
+MERGE (VENDOR:Company {name:'" + vendor + "'}) MERGE (PRODUCT:Device {name:'" + product + "'}) CREATE (VENDOR)-[:"+offering+"]->(PRODUCT)
+
+MERGE (SAFEWAY:Company {name:'Safeway'})
+MERGE (TECHDATA:Company {name:'TechData'})
+MERGE (INGRAM:Company {name:'Ingram'})
+MERGE (KELLOGS:Company {name:'Kellogs'})
+MERGE (ASIA:Territory {name:'Asia'})
+MERGE (APPLES:Device {name:'apples'})
+MERGE (SAFEWAY)-[:SELLS {name:"sells"}]->(APPLES)
+MERGE (SAFEWAY)-[:HAS_DISTRIBUTOR {name:"has distributor"}]->(TECHDATA)
+MERGE (SAFEWAY)-[:HAS_DISTRIBUTOR {name:"has distributor"}]->(INGRAM)
+MERGE (TECHDATA)-[:SHIPS_TO {name:"ships to"}]->(ASIA)
+MERGE (INGRAM)-[:SHIPS_TO {name:"ships to"}]->(ASIA)
+MERGE (TECHDATA)-[:CARRIES_BRAND {name:"carries brand"}]->(KELLOGS)
+
