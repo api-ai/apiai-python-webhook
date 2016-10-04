@@ -4,6 +4,7 @@ import urllib
 import json
 import os
 from neo4j.v1 import GraphDatabase, basic_auth
+from neo4j.v1.types import Node, Relationship
 
 from flask import Flask
 from flask import request
@@ -154,19 +155,19 @@ def answerHow(req):
     anything = req.get("result").get("parameters").get("anything")
     vendor = req.get("result").get("parameters").get("vendor")
 
-    query = "MATCH (comp:Company {name: '%s'})-[r*]->(offerer)-[s:%s]->(anything{name: '%s'}) RETURN r, s" % (vendor, offering, anything)
-    resultDB = grapheneQuery(query)
+    query = "MATCH (comp:Company {name: '%s'})-[r*]->(offerer)-[s:%s]->(anything{name: '%s'}) RETURN comp AS origin, offerer AS offerer, r AS chain, s AS offering, anything AS destination" % (vendor, offering, anything)
+    resultList = grapheneQuery(query)
 
-    speech = "How on earth?"
+    speech = ""
 
-    if len(resultDB) == 0:
-        speech += " Sorry, %s doesn't %s %s." % (vendor, offering, anything)
+    if len(resultList) == 0:
+        speech += "Sorry, %s doesn't %s %s." % (vendor, offering, anything)
     else:
-        print(resultDB)
+        print(resultList)
 
-    for record in resultDB:
+    for record in resultList:
         print(record)
-        speech += "%s does %s %s! Would you like them to?" % (vendor, offering, record["name"])
+        speech += " %s %s %s via %s!" % (vendor, record["offering"].properties["name"], record["destination"].properties["name"], record["offerer"].properties["name"])
 
     res = {
         "speech": speech,
@@ -181,10 +182,7 @@ def grapheneQuery(query):
     session = driver.session()
     resultDB = session.run(query)
     session.close()
-    print(resultDB.keys())
-    for record in resultDB:
-        print(record.values())
-    return resultDB
+    return list(resultDB)
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
