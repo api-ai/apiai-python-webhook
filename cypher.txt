@@ -68,3 +68,5 @@ MERGE (TECHDATA)-[:SHIPS_TO {name:"ships to"}]->(ASIA)
 MERGE (INGRAM)-[:SHIPS_TO {name:"ships to"}]->(ASIA)
 MERGE (TECHDATA)-[:CARRIES_BRAND {name:"carries brand"}]->(KELLOGS)
 
+MERGE (OFFERINGPATH:Query {name:"offeringPath", query:"MATCH (comp:Company {name: '%s'})-[r*]->(offerer)-[s:%s]->(anything{name: '%s'}) RETURN comp AS origin, offerer AS offerer, r AS chain, s AS offering, anything AS destination", queryArgs:["parameters.vendor", "parameters.offering", "parameters.anything"], formatter:" %s %s %s via %s!", formatterArgs:["parameters.vendor", "record.offering.name", "record.destination.name", "record.offerer.name"]})
+

@@ -150,7 +150,7 @@ EXPRTIO.extendEntity = function(entityName, entity) {
     });
 }
 
-EXPRTIO.graphCall = function(data) {
+EXPRTIO.graphCall = function(data, callback) {
     jQuery.ajax({
         url: EXPRTIO.CYPHER_URL,
         type: 'post',
@@ -161,8 +161,87 @@ EXPRTIO.graphCall = function(data) {
         dataType: "json",
         contentType: "application/json",
         success: function (data) {
-            console.info(data);
+            callback(data.results);
         }
+    });
+}
+
+//need to hook this up to an api.ai action
+EXPRTIO.testFindQuery = function() {
+    EXPRTIO.findQuery({ "vendor": "Safeway", "anything": "Asia", "offering": "SHIPS_TO" }, "offeringPath", function(speech) {
+        console.log("Databases-stored query result: " + speech);
+    });
+}
+
+EXPRTIO.findQuery = function(parameters, action, callback) {
+    var statement = "MATCH (QUERY:Query {name: '" +action + "'}) RETURN QUERY AS query";
+    var statements = [{statement: statement}];
+
+    var data = {
+        statements: statements
+    };
+    EXPRTIO.graphCall(data, function(results) {
+        var query = EXPRTIO.unpackNeoResults(results)[0]["query"];
+        EXPRTIO.runGenericQuery(parameters, query, callback);
+    });
+}
+
+EXPRTIO.unpackNeoResults = function(results) {
+    var unpacked = [];
+    //these multiple result entries must be from multiple queries,
+    //we just run one typically
+    var result = results[0];
+    for (i in result.data) {
+        var namedResult = { };
+        var row = result.data[i].row;
+        for (j in result.columns) {
+            var name = result.columns[j];
+            namedResult[name] = row[j];
+        }
+        unpacked.push(namedResult);
+    }
+    return unpacked;
+}
+
+EXPRTIO.runGenericQuery = function(parameters, genericQuery, callback) {
+    var formatter = genericQuery.formatter;
+    var formatterArgs = genericQuery.formatterArgs;
+    var query = genericQuery.query;
+    var queryArgs = genericQuery.queryArgs;
+
+    var concreteQuery = query;
+    for (i in queryArgs) {
+        var arg = queryArgs[i];
+        var components = arg.split(".")
+        if (components[0] == "parameters") {
+            concreteQuery = concreteQuery.replace(/%s/, parameters[components[1]]);
+        }
+    }
+
+    var statement = concreteQuery;
+    var statements = [{statement: statement}];
+
+    var data = {
+        statements: statements
+    };
+    EXPRTIO.graphCall(data, function(results) {
+        var speech = "";
+        var neoResults = EXPRTIO.unpackNeoResults(results);
+        for (i in neoResults) {
+            var neoResult = neoResults[i];
+            var speechLine = formatter;
+            for (j in formatterArgs) {
+                var arg = formatterArgs[j];
+                var components = arg.split(".")
+                if (components[0] == "parameters") {
+                    speechLine = speechLine.replace(/%s/, parameters[components[1]]);
+                } else if (components[0] == "record") {
+                    speechLine = speechLine.replace(/%s/, neoResult[components[1]][components[2]]);
+                }
+            }
+            speech += speechLine;
+        }
+        callback(speech);
     });
 }
 

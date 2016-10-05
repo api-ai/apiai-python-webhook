@@ -28,6 +28,7 @@ driver = GraphDatabase.driver(graphenedb_url, auth=basic_auth(graphenedb_user, g
 def root():
     return send_from_directory('static', "index.html")
 
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     req = request.get_json(silent=True, force=True)
@@ -43,9 +44,11 @@ def webhook():
     r.headers['Content-Type'] = 'application/json'
     return r
 
+
 @app.route('/<path:path>')
 def send_js(path):
     return send_from_directory('static', path)
+
 
 def processRequest(req):
     res = {}
@@ -57,6 +60,9 @@ def processRequest(req):
         res = makeWebhookResult(response, "sellDevices")
     #each function tests the request and returns data if it is the handler
     try:
+        r = findQuery(req)
+        if r != None:
+            return r
         r = answer(req)
         if r != None:
             return r
@@ -67,6 +73,7 @@ def processRequest(req):
         print("Error %s:" % (str(err)) )
 
     return res
+
 
 def makeSellDevicesResponse(req):
     result = req.get("result")
@@ -85,6 +92,7 @@ def makeSellDevicesResponse(req):
         variable = "%s do sell %s! Would you like to buy one?" % (company, record["name"])
     return variable
 
+
 def makeSourceProductsFromResponse(req):
     result = req.get("result")
     parameters = result.get("parameters")
@@ -97,6 +105,7 @@ def makeSourceProductsFromResponse(req):
     if country == 'Europe':
         return 'cheryl_mepham@shi.com is our Mobility Specialist out of the UK who can help assist.'
     return "Test Webhook"
+
 
 def makeWebhookResult(data, source):
 
@@ -112,6 +121,7 @@ def makeWebhookResult(data, source):
         # "contextOut": [],
         "source": source
     }
+
 
 def answer(req):
     source = "offeringTriple"
@@ -146,6 +156,7 @@ def answer(req):
 
     return res
 
+
 def answerHow(req):
     source = "offeringPath"
     if req.get("result").get("action") != source:
@@ -177,12 +188,66 @@ def answerHow(req):
 
     return res
 
+
+def findQuery(req):
+    action = req.get("result").get("action")
+    queryQuery = "MATCH (QUERY:Query {name: '%s'}) RETURN QUERY AS query" % (action)
+    resultList = grapheneQuery(queryQuery)
+
+    if len(resultList) == 0:
+        return None
+
+    parameters = req.get("result").get("parameters")
+    foundQuery = resultList[0]["query"].properties
+
+    query = foundQuery["query"]
+    queryArgs = foundQuery["queryArgs"]
+    formatter = foundQuery["formatter"]
+    formatterArgs = foundQuery["formatterArgs"]
+
+    queryArgList = []
+    for arg in queryArgs:
+        components = arg.split(".")
+        if components[0] == "parameters":
+            queryArgList.append(parameters.get(components[1]))
+
+    concreteQuery = query % tuple(queryArgList)
+
+    resultList = grapheneQuery(concreteQuery)
+
+    speech = "D: "
+    for record in resultList:
+        print(record)
+        speech += formatter % tuple(extractRecordParameters(parameters, record, formatterArgs))
+
+    res = {
+        "speech": speech,
+        "displayText": speech,
+        "source": action
+    }
+
+    return res
+
+
+def extractRecordParameters(parameters, record, formatterArgs):
+    formatterArgList = []
+    for arg in formatterArgs:
+        components = arg.split(".")
+        if components[0] == "parameters":
+            formatterArgList.append(parameters.get(components[1]))
+        elif components[0] == "record":
+            formatterArgList.append(record[components[1]].properties[components[2]])
+
+    return formatterArgList
+
+
 def grapheneQuery(query):
     print(query)
     session = driver.session()
     resultDB = session.run(query)
     session.close()
     return list(resultDB)
+
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
