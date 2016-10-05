@@ -211,14 +211,20 @@ def findQuery(req):
         if components[0] == "parameters":
             queryArgList.append(parameters.get(components[1]))
 
+    print("Query %s with arguments %s" % (query, queryArgList))
+
     concreteQuery = query % tuple(queryArgList)
+
+    print("Expands to %s " % (concreteQuery))
 
     resultList = grapheneQuery(concreteQuery)
 
     speech = "D: "
     for record in resultList:
         print(record)
-        speech += formatter % tuple(extractRecordParameters(parameters, record, formatterArgs))
+        formatterArgList = extractRecordParameters(parameters, record, formatterArgs)
+        print("Applied to formatter %s with arguments %s" % (formatter, formatterArgList))
+        speech += formatter % tuple(formatterArgList)
 
     res = {
         "speech": speech,

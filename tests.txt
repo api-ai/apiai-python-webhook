@@ -1,4 +1,15 @@
 
+Tests:
+
+curl -H "Content-Type: application/json" -X POST -d '{ "result": { "parameters": { "vendor": "SHI", "product": "iPad", "offering": "sell" }, "action": "offeringTriple" } }' http://localhost:5000/webhook
+
+curl -H "Content-Type: application/json" -X POST -d '{ "result": { "parameters": { "part": "RAM", "brand": "Apple" }, "action": "partLocator" } }' http://localhost:5000/webhook
+
+curl -H "Content-Type: application/json" -X POST -d '{ "result": { "parameters": { "vendor": "Safeway", "anything": "Asia", "offering": "SHIPS_TO" }, "action": "offeringPath" } }' http://localhost:5000/webhook
+
+
+Notes:
+
 The full JSON body of a webhook request is as follows:
 
  {

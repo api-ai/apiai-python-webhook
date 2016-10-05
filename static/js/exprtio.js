@@ -171,6 +171,9 @@ EXPRTIO.testFindQuery = function() {
     EXPRTIO.findQuery({ "vendor": "Safeway", "anything": "Asia", "offering": "SHIPS_TO" }, "offeringPath", function(speech) {
         console.log("Databases-stored query result: " + speech);
     });
+    EXPRTIO.findQuery({ "part": "RAM", "brand": "Apple" }, "partLocator", function(speech) {
+        console.log("Databases-stored query result: " + speech);
+    });
 }
 
 EXPRTIO.findQuery = function(parameters, action, callback) {
