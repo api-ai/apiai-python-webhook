@@ -6,6 +6,12 @@
     margin: 8px;
 }
 
+.exprtio-header {
+    background-image: url('image/exprtio-small.png');
+    background-size: 300px;
+    height: 100px;
+}
+
 .auto-height {
     height: auto;
 }
@@ -14,4 +20,15 @@
     line-height: 30px;
     padding-top: 10px;
     padding-bottom: 20px;
+}
+
+.exprtio-node {
+    fill: #ccc;
+    stroke: #fff;
+    stroke-width: 1px;
+}
+
+.exprtio-edge {
+    stroke: #777;
+    stroke-width: 2px;
 }
