@@ -28,6 +28,13 @@ EXPRTIO.query = function(text, callback) {
         contentType: "application/json",
         success: function (data) {
             console.info(data);
+
+//REDUNDANT DIRECT QUERY OF DATABASE SO WE CAN DISPLAY AS A GRAPH
+            EXPRTIO.findQuery(data.result.parameters, data.result.action, function(speech) {
+                console.log("Database-stored query result: " + speech);
+                EXPRTIO.visualize(EXPRTIO.generateGraph(EXPRTIO.currentQueryResults));
+            });
+
             callback(data.result.fulfillment.speech);
         }
     });
@@ -168,11 +175,12 @@ EXPRTIO.graphCall = function(data, callback) {
 
 //need to hook this up to an api.ai action
 EXPRTIO.testFindQuery = function() {
-    EXPRTIO.findQuery({ "vendor": "Safeway", "anything": "Asia", "offering": "SHIPS_TO" }, "offeringPath", function(speech) {
-        console.log("Databases-stored query result: " + speech);
-    });
     EXPRTIO.findQuery({ "part": "RAM", "brand": "Apple" }, "partLocator", function(speech) {
-        console.log("Databases-stored query result: " + speech);
+        console.log("Database-stored query result: " + speech);
+    });
+    EXPRTIO.findQuery({ "vendor": "Safeway", "anything": "Asia", "offering": "SHIPS_TO" }, "offeringPath", function(speech) {
+        console.log("Database-stored query result: " + speech);
+        EXPRTIO.visualize(EXPRTIO.generateGraph(EXPRTIO.currentQueryResults));
     });
 }
 
@@ -195,12 +203,15 @@ EXPRTIO.unpackNeoResults = function(results) {
     //we just run one typically
     var result = results[0];
     for (i in result.data) {
+        var data = result.data[i];
         var namedResult = { };
-        var row = result.data[i].row;
+        var row = data.row;
         for (j in result.columns) {
             var name = result.columns[j];
             namedResult[name] = row[j];
         }
+        namedResult["_meta"] = data.meta;
+        namedResult["_graph"] = data.graph;
         unpacked.push(namedResult);
     }
     return unpacked;
@@ -222,7 +233,10 @@ EXPRTIO.runGenericQuery = function(parameters, genericQuery, callback) {
     }
 
     var statement = concreteQuery;
-    var statements = [{statement: statement}];
+    var statements = [{
+        statement: statement,
+        resultDataContents: ["row", "graph"]
+    }];
 
     var data = {
         statements: statements
@@ -230,6 +244,7 @@ EXPRTIO.runGenericQuery = function(parameters, genericQuery, callback) {
     EXPRTIO.graphCall(data, function(results) {
         var speech = "";
         var neoResults = EXPRTIO.unpackNeoResults(results);
+        EXPRTIO.currentQueryResults = neoResults;
         for (i in neoResults) {
             var neoResult = neoResults[i];
             var speechLine = formatter;
@@ -282,6 +297,93 @@ EXPRTIO.changeOnEnter = function(event) {
     if (event.keyCode == 13) {
         event.target.onchange();
     }
+}
+
+EXPRTIO.generateGraph = function(queryResults) {
+    var neoGraph = queryResults[0]._graph;
+    var neoNodes = neoGraph.nodes;
+    var neoLinks = neoGraph.relationships;
+
+    var nodeRefs = { };
+    var nodes = [ ];
+    for (i in neoNodes) {
+        var node = neoNodes[i];
+        nodes.push({ x: 100, y: 100, name: node.properties.name });
+        nodeRefs[node.id] = i;
+    }
+
+    var links = [ ];
+    for (i in neoLinks) {
+        var link = neoLinks[i];
+        links.push({ target: parseInt(nodeRefs[link.endNode]), source: parseInt(nodeRefs[link.startNode]), name: link.properties.name });
+    }
+
+    var graph = { nodes: nodes, links: links };
+    return graph;
+}
+
+EXPRTIO.visualize = function(graph) {
+
+    var width = "600";
+    var height = "300";
+
+    var nodes = graph.nodes;
+    var links = graph.links;
+
+    d3.select("svg").remove();
+    var svg = d3.select('#exprt-visualization').append('svg')
+        .attr('width', width)
+        .attr('height', height);
+
+    var force = d3.layout.force()
+        .size([width, height])
+        .nodes(nodes)
+        .links(links);
+
+    force.linkDistance(width/3.05);
+    force.charge(-1000);
+
+    var link = svg.selectAll('.exprtio-edge')
+        .data(links)
+        .enter().append('line')
+        .attr('class', 'exprtio-edge');
+
+    var node = svg.selectAll('.exprtio-node')
+        .data(nodes)
+        .enter().append('circle')
+        .attr('class', 'exprtio-node')
+    
+
+    var nodelabels = svg.selectAll(".exprtio-nodelabel")
+       .data(nodes)
+       .enter()
+       .append("text")
+       .attr({
+            "x": function(d) { return d.x; },
+            "y": function(d) { return d.y; },
+            "class": "exprtio-nodelabel",
+            "stroke": "black"
+        })
+       .text(function(d) { return d.name; } );
+
+    force.on('end', function() {
+
+        node.attr('r', width/100)
+            .attr('cx', function(d) { return d.x; })
+            .attr('cy', function(d) { return d.y; });
+
+        link.attr('x1', function(d) { return d.source.x; })
+            .attr('y1', function(d) { return d.source.y; })
+            .attr('x2', function(d) { return d.target.x; })
+            .attr('y2', function(d) { return d.target.y; });
+
+        nodelabels.attr("x", function(d) { return d.x; })
+                  .attr("y", function(d) { return d.y; });
+
+    });
+
+    force.start();
+
 }
 
 EXPRTIO.refreshEntities();
