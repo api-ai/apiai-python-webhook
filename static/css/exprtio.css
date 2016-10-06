@@ -28,6 +28,10 @@
     stroke-width: 1px;
 }
 
+.exprtio-nodelabel {
+    font-weight: normal;
+}
+
 .exprtio-edge {
     stroke: #777;
     stroke-width: 2px;
