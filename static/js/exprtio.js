@@ -330,7 +330,7 @@ EXPRTIO.visualize = function(graph) {
     var nodes = graph.nodes;
     var links = graph.links;
 
-    d3.select("svg").remove();
+    d3.select('#exprt-visualization').select("svg").remove();
     var svg = d3.select('#exprt-visualization').append('svg')
         .attr('width', width)
         .attr('height', height);
