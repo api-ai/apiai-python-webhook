@@ -325,7 +325,7 @@ EXPRTIO.generateGraph = function(queryResults) {
 EXPRTIO.visualize = function(graph) {
 
     var width = "600";
-    var height = "300";
+    var height = "250";
 
     var nodes = graph.nodes;
     var links = graph.links;
