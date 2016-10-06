@@ -328,8 +328,8 @@ EXPRTIO.visualize = function(graph) {
     var width = "600";
     var height = "250";
 
-    var nodes = graph.nodes;
-    var links = graph.links;
+    var graphNodes = graph.nodes;
+    var graphLinks = graph.links;
 
     d3.select('#exprt-visualization').select("svg").remove();
     var svg = d3.select('#exprt-visualization').append('svg')
@@ -338,25 +338,26 @@ EXPRTIO.visualize = function(graph) {
 
     var force = d3.layout.force()
         .size([width, height])
-        .nodes(nodes)
-        .links(links);
+        .on('start', start)
+        .nodes(graphNodes)
+        .links(graphLinks);
 
     force.linkDistance(width/3.05);
     force.charge(-1000);
 
-    var link = svg.selectAll('.exprtio-edge')
-        .data(links)
+    var links = svg.selectAll('.exprtio-edge')
+        .data(graphLinks)
         .enter().append('line')
         .attr('class', 'exprtio-edge');
 
-    var node = svg.selectAll('.exprtio-node')
-        .data(nodes)
+    var nodes = svg.selectAll('.exprtio-node')
+        .data(graphNodes)
         .enter().append('circle')
         .attr('class', 'exprtio-node')
     
 
     var nodelabels = svg.selectAll(".exprtio-nodelabel")
-       .data(nodes)
+       .data(graphNodes)
        .enter()
        .append("text")
        .attr({
@@ -367,24 +368,36 @@ EXPRTIO.visualize = function(graph) {
         })
        .text(function(d) { return d.name; } );
 
-    force.on('end', function() {
-
-        node.attr('r', width/100)
+    var applyValues = function() {
+        nodes.attr('r', width/100)
             .attr('cx', function(d) { return d.x; })
             .attr('cy', function(d) { return d.y; });
 
-        link.attr('x1', function(d) { return d.source.x; })
+        links.attr('x1', function(d) { return d.source.x; })
             .attr('y1', function(d) { return d.source.y; })
             .attr('x2', function(d) { return d.target.x; })
             .attr('y2', function(d) { return d.target.y; });
 
         nodelabels.attr("x", function(d) { return d.x; })
                   .attr("y", function(d) { return d.y; });
+    };
 
-    });
+    force.on('end', applyValues);
+
+    function start() {
+        var ticksPerRender = 3;
+        requestAnimationFrame(function render() {
+            for (var i = 0; i < ticksPerRender; i++) {
+                force.tick();
+            }
+            applyValues();
+            if (force.alpha() > 0) {
+                requestAnimationFrame(render);
+            }
+        })
+    };
 
     force.start();
-
 }
 
 EXPRTIO.refreshEntities();
