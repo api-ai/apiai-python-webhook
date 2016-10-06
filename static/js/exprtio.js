@@ -264,11 +264,12 @@ EXPRTIO.runGenericQuery = function(parameters, genericQuery, callback) {
 }
 
 EXPRTIO.createGraphKnowledge = function(vendor, offering, product) {
+    var userOffering = offering;
     vendor = EXPRTIO.normalizeEntity(vendor, "vendor");
     offering = EXPRTIO.normalizeEntity(offering, "offering");
     product = EXPRTIO.normalizeEntity(product, "product");
 
-    var statement = "MERGE (VENDOR:Company {name:'" + vendor + "'}) MERGE (PRODUCT:Device {name:'" + product + "'}) CREATE (VENDOR)-[:"+offering+"]->(PRODUCT)";
+    var statement = "MERGE (VENDOR:Company {name:'" + vendor + "'}) MERGE (PRODUCT:Device {name:'" + product + "'}) CREATE (VENDOR)-[:" + offering + " {name:'" + userOffering + "'}]->(PRODUCT)";
     var statements = [{statement: statement}];
 
     var data = {

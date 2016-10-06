@@ -82,13 +82,14 @@ MERGE (TECHDATA)-[:CARRIES_BRAND {name:"carries brand"}]->(APPLE)
 
 MERGE (OFFERINGPATH:Query {name:"offeringPath", query:"MATCH (comp:Company {name: '%s'})-[r*]->(offerer)-[s:%s]->(anything{name: '%s'}) RETURN comp AS origin, offerer AS offerer, r AS chain, s AS offering, anything AS destination", queryArgs:["parameters.vendor", "parameters.offering", "parameters.anything"], formatter:" %s %s %s via %s!", formatterArgs:["parameters.vendor", "record.offering.name", "record.destination.name", "record.offerer.name"]})
 
+MERGE (INGRAM:Company {name:'Ingram'})
 MERGE (APPLEB:Company {name:'Apple'})
 MERGE (AXIOM:Company {name:'Axiom'})
-MERGE (MEMORYEXPRESS:Company {name:'MemoryExpress'})
 MERGE (LENOVO:Company {name:'Lenovo'})
 MERGE (AXIOM)-[:HAS_PART {name:"has part"}]->(:Part {name:'RAM'})-[:FOR_BRAND {name:"for brand"}]->(APPLEB)
 MERGE (AXIOM)-[:HAS_PART {name:"has part"}]->(:Part {name:'battery'})-[:FOR_BRAND {name:"for brand"}]->(APPLEB)
-MERGE (MEMORYEXPRESS)-[:HAS_PART {name:"has part"}]->(:Part {name:'battery'})-[:FOR_BRAND {name:"for brand"}]->(LENOVO)
+MERGE (AXIOM)-[:HAS_PART {name:"has part"}]->(:Part {name:'battery'})-[:FOR_BRAND {name:"for brand"}]->(LENOVO)
+MERGE (INGRAM)-[:HAS_PART {name:"has part"}]->(:Part {name:'RAM'})-[:FOR_BRAND {name:"for brand"}]->(LENOVO)
 
 MERGE (PARTLOCATOR:Query {name:"partLocator", query:"MATCH (comp:Company)-[:HAS_PART]->(Part {name:'%s'})-[:FOR_BRAND]->(:Company{name: '%s'}) RETURN comp AS vendor", queryArgs:["parameters.part", "parameters.brand"], formatter:" %s carries %s parts for %s.", formatterArgs:["record.vendor.name", "parameters.part", "parameters.brand"]})
 
