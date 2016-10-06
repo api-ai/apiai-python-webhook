@@ -136,7 +136,7 @@ def answer(req):
     print(speech)
     speech = ": "
 
-    query = "MATCH (comp:Company {name: '%s'})-[:%s]->(devices{name: '%s'}) RETURN devices.name AS name" % (vendor, offering, product)
+    query = "MATCH (comp:Company {name: '%s'})-[offering:%s]->(devices{name: '%s'}) RETURN devices.name AS name, offering.name AS offeringName" % (vendor, offering, product)
     print(query)
     session = driver.session()
     resultDB = list(session.run(query))
@@ -146,7 +146,7 @@ def answer(req):
         speech += "Sorry, %s doesn't %s %s." % (vendor, offering, product)
 
     for record in resultDB:
-        speech += "%s does %s %s! Would you like to buy one?" % (vendor, offering, record["name"])
+        speech += "%s does %s %s! Would you like to proceed?" % (vendor, record["offeringName"], record["name"])
 
     res = {
         "speech": speech,
