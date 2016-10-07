@@ -66,9 +66,6 @@ def processRequest(req):
         r = answer(req)
         if r != None:
             return r
-        r = answerHow(req)
-        if r != None:
-            return r
     except Exception as err:
         print("Error %s:" % (str(err)) )
 
@@ -151,38 +148,6 @@ def answer(req):
     res = {
         "speech": speech,
         "displayText": "The displayText is the answer",
-        "source": source
-    }
-
-    return res
-
-
-def answerHow(req):
-    source = "offeringPath"
-    if req.get("result").get("action") != source:
-        return None
-
-    offering = req.get("result").get("parameters").get("offering")
-    anything = req.get("result").get("parameters").get("anything")
-    vendor = req.get("result").get("parameters").get("vendor")
-
-    query = "MATCH (comp:Company {name: '%s'})-[r*]->(offerer)-[s:%s]->(anything{name: '%s'}) RETURN comp AS origin, offerer AS offerer, r AS chain, s AS offering, anything AS destination" % (vendor, offering, anything)
-    resultList = grapheneQuery(query)
-
-    speech = ""
-
-    if len(resultList) == 0:
-        speech += "Sorry, %s doesn't %s %s." % (vendor, offering, anything)
-    else:
-        print(resultList)
-
-    for record in resultList:
-        print(record)
-        speech += " %s %s %s via %s!" % (vendor, record["offering"].properties["name"], record["destination"].properties["name"], record["offerer"].properties["name"])
-
-    res = {
-        "speech": speech,
-        "displayText": speech,
         "source": source
     }
 
