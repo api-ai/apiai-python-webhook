@@ -16,10 +16,11 @@ EXPRTIO.entities = [ ];
 EXPRTIO.query = function(text, callback) {
     var data = {
         query: [ text ],
+        sessionId: EXPRTIO.getapiaiSessionID(),
         "lang": "en",
     };
     jQuery.ajax({
-        url: EXPRTIO.apiaiurl + "/query?v=20150910&sessionId=" + EXPRTIO.getapiaiSessionID(),
+        url: EXPRTIO.apiaiurl + "/query?v=20150910",
         type: 'post',
         data: JSON.stringify(data),
         headers: {
