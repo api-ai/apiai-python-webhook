@@ -1,6 +1,7 @@
 EXPRTIO = { }
 
 EXPRTIO.apiaiurl = "https://api.api.ai/v1";
+EXPRTIO.apiaiSessionKey = "EXPRTIO.apiaiSessionKey";
 
 EXPRTIO.CYPHER_URL = "http://app5505001242pigb.sb10.stations.graphenedb.com:24789/db/data/transaction/commit";
 
@@ -18,7 +19,7 @@ EXPRTIO.query = function(text, callback) {
         "lang": "en",
     };
     jQuery.ajax({
-        url: EXPRTIO.apiaiurl + "/query?v=20150910",
+        url: EXPRTIO.apiaiurl + "/query?v=20150910&sessionId=" + EXPRTIO.getapiaiSessionID(),
         type: 'post',
         data: JSON.stringify(data),
         headers: {
@@ -398,6 +399,26 @@ EXPRTIO.visualize = function(graph) {
     };
 
     force.start();
+}
+
+EXPRTIO.getRandomString = function(length) {
+    if (!length) {
+        length = 10;
+    }
+    var result = "";
+    while (result.length < length) {
+        result += Math.random().toString(36).substring(2);
+    }
+    return result.substring(0, length);
+}
+
+EXPRTIO.getapiaiSessionID = function() {
+    var sessionID = window.sessionStorage.getItem(EXPRTIO.apiaiSessionKey);
+    if (!sessionID) {
+        sessionID = EXPRTIO.getRandomString(36);
+        window.sessionStorage.setItem(EXPRTIO.apiaiSessionKey, sessionID);
+    }
+    return sessionID;
 }
 
 EXPRTIO.refreshEntities();
