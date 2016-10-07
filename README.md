@@ -9,11 +9,11 @@ More info about Api.ai webhooks could be found here:
 
 Run locally:
   - install Neo4j community: tar xvf Downloads/neo4j-community-3.0.6-unix.tar
-  - Set your environment variables
+  - Set your environment variables (custom Neo4j password must be set, connect to the console http://localhost:7474/browser/)
 ```
 export GRAPHENEDB_WHITE_BOLT_URL="bolt://localhost"
 export GRAPHENEDB_WHITE_BOLT_USER="neo4j"
-export GRAPHENEDB_WHITE_BOLT_PASSWORD="neo4jneo4j"
+export GRAPHENEDB_WHITE_BOLT_PASSWORD="neo4j"
 export NEO4J_HOME=/Users/path/to/neo4j-community-3.0.6
 ```
   - $NEO4J_HOME/bin/neo4j console
