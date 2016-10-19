@@ -5,7 +5,9 @@ EXPRTIO.apiaiSessionKey = "EXPRTIO.apiaiSessionKey";
 
 EXPRTIO.CYPHER_URL = "http://app5505001242pigb.sb10.stations.graphenedb.com:24789/db/data/transaction/commit";
 
-EXPRTIO.CYPHER_AUTH = "Basic YXBwNTUwNTAwMTItQ252WGxnOnd3WUVVUW9hSXlNdjEzUzg0Qllk";
+EXPRTIO.CYPHER_USER = "app55050012-CnvXlg";
+EXPRTIO.CYPHER_PASS = "wwYEUQoaIyMv13S84BYd";
+EXPRTIO.CYPHER_AUTH = "Basic " + btoa(EXPRTIO.CYPHER_USER + ":" + EXPRTIO.CYPHER_PASS);;
 
 EXPRTIO.APIAI_CLIENTAUTH = "Bearer 43ab7b832fb1437abf82f2a77a1d5952";
 
