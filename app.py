@@ -63,9 +63,6 @@ def processRequest(req):
         r = findQuery(req)
         if r != None:
             return r
-        r = answer(req)
-        if r != None:
-            return r
     except Exception as err:
         print("Error %s:" % (str(err)) )
 
@@ -120,40 +117,6 @@ def makeWebhookResult(data, source):
     }
 
 
-def answer(req):
-    source = "offeringTriple"
-    if req.get("result").get("action") != source:
-        return None
-
-    offering = req.get("result").get("parameters").get("offering")
-    product = req.get("result").get("parameters").get("product")
-    vendor = req.get("result").get("parameters").get("vendor")
-
-    speech = "All of our graph representatives are busy. If you want %s to %s your %ss, you should ask them." % (vendor, offering, product)
-    print(speech)
-    speech = ": "
-
-    query = "MATCH (comp:Company {name: '%s'})-[offering:%s]->(devices{name: '%s'}) RETURN devices.name AS name, offering.name AS offeringName" % (vendor, offering, product)
-    print(query)
-    session = driver.session()
-    resultDB = list(session.run(query))
-    session.close()
-    print("The query returned %d items" % (len(resultDB)) )
-    if len(resultDB) == 0 :
-        speech += "Sorry, %s doesn't %s %s." % (vendor, offering, product)
-
-    for record in resultDB:
-        speech += "%s does %s %s! Would you like to proceed?" % (vendor, record["offeringName"], record["name"])
-
-    res = {
-        "speech": speech,
-        "displayText": "The displayText is the answer",
-        "source": source
-    }
-
-    return res
-
-
 def findQuery(req):
     action = req.get("result").get("action")
     queryQuery = "MATCH (QUERY:Query {name: '%s'}) RETURN QUERY AS query" % (action)
@@ -167,6 +130,8 @@ def findQuery(req):
 
     query = foundQuery["query"]
     queryArgs = foundQuery["queryArgs"]
+    #failedMessage message must take the same arguments as the query itself
+    failedMessage = foundQuery["fail"] or "No data found."
     formatter = foundQuery["formatter"]
     formatterArgs = foundQuery["formatterArgs"]
 
@@ -184,7 +149,10 @@ def findQuery(req):
 
     resultList = grapheneQuery(concreteQuery)
 
-    speech = "D: "
+    speech = ""
+    if len(resultList) == 0 :
+        speech += failedMessage % tuple(queryArgList)
+
     for record in resultList:
         print(record)
         formatterArgList = extractRecordParameters(parameters, record, formatterArgs)

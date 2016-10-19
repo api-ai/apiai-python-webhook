@@ -82,6 +82,8 @@ MERGE (TECHDATA)-[:CARRIES_BRAND {name:"carries brand"}]->(APPLE)
 
 MERGE (OFFERINGPATH:Query {name:"offeringPath", query:"MATCH (comp:Company {name: '%s'})-[r*]->(offerer)-[s:%s]->(anything{name: '%s'}) RETURN comp AS origin, offerer AS offerer, r AS chain, s AS offering, anything AS destination", queryArgs:["parameters.vendor", "parameters.offering", "parameters.anything"], formatter:" %s %s %s via %s!", formatterArgs:["parameters.vendor", "record.offering.name", "record.destination.name", "record.offerer.name"]})
 
+MERGE (OFFERINGTRIPLE:Query {name:"offeringTriple", query:"MATCH (comp:Company {name: '%s'})-[offering:%s]->(devices{name: '%s'}) RETURN devices AS devices, offering AS offering", queryArgs:["parameters.vendor", "parameters.offering", "parameters.product"], fail:" Sorry it is not the case that %s %s %s.", formatter:" %s %s %s! Would you like to proceed?", formatterArgs:["parameters.vendor", "record.offering.name", "record.devices.name"]})
+
 MERGE (INGRAM:Company {name:'Ingram'})
 MERGE (APPLEB:Company {name:'Apple'})
 MERGE (AXIOM:Company {name:'Axiom'})
