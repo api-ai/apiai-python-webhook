@@ -131,7 +131,7 @@ def findQuery(req):
     query = foundQuery["query"]
     queryArgs = foundQuery["queryArgs"]
     #failedMessage message must take the same arguments as the query itself
-    failedMessage = foundQuery["fail"] or "No data found."
+    failedMessage = foundQuery.get("fail") or "No data found."
     formatter = foundQuery["formatter"]
     formatterArgs = foundQuery["formatterArgs"]
 
