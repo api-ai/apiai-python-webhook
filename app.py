@@ -4,6 +4,7 @@ import urllib
 import json
 import os
 from string import Formatter
+import traceback
 from collections import namedtuple
 from neo4j.v1 import GraphDatabase, basic_auth
 from neo4j.v1.types import Node, Relationship
@@ -71,6 +72,7 @@ def processRequest(req):
             return r
     except Exception as err:
         print("Error %s:" % (str(err)) )
+        traceback.print_exc()
 
     return res
 
