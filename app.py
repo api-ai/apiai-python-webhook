@@ -141,7 +141,6 @@ def findQuery(req):
     #failedMessage message must take the same arguments as the query itself
     failedMessage = foundQuery.get("fail") or "No data found."
     formatter = foundQuery["formatter"]
-    formatterArgs = foundQuery["formatterArgs"]
 
     queryArgList = []
     for arg in queryArgs:
@@ -163,9 +162,9 @@ def findQuery(req):
 
     for record in resultList:
         print(record)
-        formatterArgList = extractRecordParameters(parameters, record, formatterArgs)
-        print("Applied to formatter %s with arguments %s" % (formatter, formatterArgList))
-        speech += formatter % tuple(formatterArgList)
+        context = extractRecord(record)
+        print("Applied to formatter %s with arguments %s" % (formatter, context))
+        speech += grammify(formatter, p = objectify(parameters), **context)
 
     res = {
         "speech": speech,
@@ -176,16 +175,14 @@ def findQuery(req):
     return res
 
 
-def extractRecordParameters(parameters, record, formatterArgs):
-    formatterArgList = []
-    for arg in formatterArgs:
-        components = arg.split(".")
-        if components[0] == "parameters":
-            formatterArgList.append(parameters.get(components[1]))
-        elif components[0] == "record":
-            formatterArgList.append(record[components[1]].properties[components[2]])
+def extractRecord(record):
+    contextDictionary = { }
+    for key in record:
+        item = record[key]
+        if hasattr(item, 'properties'):
+            contextDictionary[key] = objectify(item.properties)
 
-    return formatterArgList
+    return contextDictionary
 
 
 def grapheneQuery(query):

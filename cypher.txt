@@ -80,9 +80,14 @@ MERGE (BLUESTAR)-[:SHIPS_TO {name:"ships to"}]->(CAD)
 MERGE (CHERYL)-[:SHIPS_TO {name:"ships to"}]->(EU)
 MERGE (TECHDATA)-[:CARRIES_BRAND {name:"carries brand"}]->(APPLE)
 
-MERGE (OFFERINGPATH:Query {name:"offeringPath", query:"MATCH (comp:Company {name: '%s'})-[r*]->(offerer)-[s:%s]->(anything{name: '%s'}) RETURN comp AS origin, offerer AS offerer, r AS chain, s AS offering, anything AS destination", queryArgs:["parameters.vendor", "parameters.offering", "parameters.anything"], formatter:" %s %s %s via %s!", formatterArgs:["parameters.vendor", "record.offering.name", "record.destination.name", "record.offerer.name"]})
+//MATCH (n:Query ) WHERE n.name="offeringPath" DELETE n
+//MATCH (n:Query ) WHERE n.name="offeringTriple" DELETE n
+//MATCH (n:Query ) WHERE n.name="partLocator" DELETE n
+MERGE (OFFERINGPATH:Query {name:"offeringPath", query:"MATCH (comp:Company {name: '%s'})-[r*]->(offerer)-[s:%s]->(anything{name: '%s'}) RETURN comp AS origin, offerer AS offerer, r AS chain, s AS offering, anything AS destination", queryArgs:["parameters.vendor", "parameters.offering", "parameters.anything"], formatter:"{p.vendor} {offering.name} {destination.name} via {offerer.name}!"})
 
-MERGE (OFFERINGTRIPLE:Query {name:"offeringTriple", query:"MATCH (comp:Company {name: '%s'})-[offering:%s]->(devices{name: '%s'}) RETURN devices AS devices, offering AS offering", queryArgs:["parameters.vendor", "parameters.offering", "parameters.product"], fail:" Sorry, {p.vendor} does not {p.offering!g:{inf}} {p.product}.", formatter:" %s %s %s! Would you like to proceed?", formatterArgs:["parameters.vendor", "record.offering.name", "record.devices.name"]})
+MERGE (OFFERINGTRIPLE:Query {name:"offeringTriple", query:"MATCH (comp:Company {name: '%s'})-[offering:%s]->(devices{name: '%s'}) RETURN devices AS device, offering AS offering", queryArgs:["parameters.vendor", "parameters.offering", "parameters.product"], fail:" Sorry, {p.vendor} does not {p.offering!g:{inf}} {p.product}.", formatter:"{p.vendor} {offering.name!g:{3sg}} {device.name}! Would you like to proceed?"})
+
+MERGE (PARTLOCATOR:Query {name:"partLocator", query:"MATCH (comp:Company)-[:HAS_PART]->(Part {name:'%s'})-[:FOR_BRAND]->(:Company{name: '%s'}) RETURN comp AS vendor", queryArgs:["parameters.part", "parameters.brand"], formatter:"{vendor.name} carries {p.part} parts for {p.brand}.", fail:" Sorry, we could not find {p.part} parts for {p.brand}."})
 
 MERGE (INGRAM:Company {name:'Ingram'})
 MERGE (APPLEB:Company {name:'Apple'})
@@ -93,6 +98,5 @@ MERGE (AXIOM)-[:HAS_PART {name:"has part"}]->(:Part {name:'battery'})-[:FOR_BRAN
 MERGE (AXIOM)-[:HAS_PART {name:"has part"}]->(:Part {name:'battery'})-[:FOR_BRAND {name:"for brand"}]->(LENOVO)
 MERGE (INGRAM)-[:HAS_PART {name:"has part"}]->(:Part {name:'RAM'})-[:FOR_BRAND {name:"for brand"}]->(LENOVO)
 
-MERGE (PARTLOCATOR:Query {name:"partLocator", query:"MATCH (comp:Company)-[:HAS_PART]->(Part {name:'%s'})-[:FOR_BRAND]->(:Company{name: '%s'}) RETURN comp AS vendor", queryArgs:["parameters.part", "parameters.brand"], formatter:" %s carries %s parts for %s.", formatterArgs:["record.vendor.name", "parameters.part", "parameters.brand"]})
 
 Match ()-[r]-() WHERE type(r) = "SELLS" SET r.name = "sells"
