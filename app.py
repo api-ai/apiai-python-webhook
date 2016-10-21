@@ -16,7 +16,7 @@ from flask import make_response
 from flask import render_template
 from flask import send_from_directory
 
-from grammar import grammify, objectify
+from grammar import grammify, objectify, parseEnglish
 
 # Flask app should start in global layout
 app = Flask(__name__)
@@ -68,6 +68,9 @@ def processRequest(req):
     #each function tests the request and returns data if it is the handler
     try:
         r = findQuery(req)
+        if r != None:
+            return r
+        r = parseEnglish(req)
         if r != None:
             return r
     except Exception as err:

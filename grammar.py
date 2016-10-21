@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from string import Formatter
 from collections import namedtuple
-from pattern.en import conjugate
+from pattern.en import conjugate, parsetree
 
 def objectify(dict):
     fields = ' '.join(dict.keys())
@@ -39,3 +39,35 @@ class GrammarFormatter(Formatter):
 grammify = GrammarFormatter().format
 print(grammify('She {verb!g:{3sg}}, I {verb!g:{inf}}, it is {verb!g:{1sgp}}.', verb='sells'))
 print(grammify(u'Indeed, {p.vendor} does {p.offering!g:{inf}} {p.product}', p = objectify({'product': 'iPhone', 'vendor': 'SHI', 'offering': 'SELLS'})));
+
+
+#Unfortunately the pattern.en parser is very rough, but we might be able
+#to do something useful with syntaxnet
+def parseEnglish(req):
+    action = req.get("result").get("action")
+    if action != "fallback":
+        return None
+
+    queryText = req.get("result").get("resolvedQuery")
+
+    sentences = parsetree(queryText, relations=True, lemmata=True)
+
+    speech = "Hang on, let me consult an expert about your"
+
+    topic = None
+
+    for sentence in sentences:
+        for chunk in sentence.chunks:
+           if chunk.role == "SBJ" or (topic == None and chunk.role == "OBJ"):
+              topic = chunk.head.string
+        speech += " %s" % topic
+
+    speech += "."
+
+    res = {
+        "speech": speech,
+        "displayText": speech,
+        "source": action
+    }
+
+    return res

@@ -7,6 +7,7 @@ curl -H "Content-Type: application/json" -X POST -d '{ "result": { "parameters":
 
 curl -H "Content-Type: application/json" -X POST -d '{ "result": { "parameters": { "vendor": "Safeway", "anything": "Asia", "offering": "SHIPS_TO" }, "action": "offeringPath" } }' http://localhost:5000/webhook
 
+curl -H "Content-Type: application/json" -X POST -d '{ "result": { "resolvedQuery": "The mouse pointer does not move", "action": "fallback" } }' http://localhost:5000/webhook
 
 Notes:
 
