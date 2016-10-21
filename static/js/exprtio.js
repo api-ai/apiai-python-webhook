@@ -72,7 +72,7 @@ EXPRTIO.addToTranscript = function(name, text) {
     chatLine.innerHTML = "<span class='exprtio-name'>" + name + ":</span>" + text;
     var chatTranscript = document.getElementById("exprtio-transcript");
     chatTranscript.style.display = "block";
-    chatTranscript.append(chatLine);
+    chatTranscript.appendChild(chatLine);
     EXPRTIO.scrollChatToBottom();
 }
 
