@@ -22,6 +22,57 @@
     padding-bottom: 20px;
 }
 
+.exprtio-transcript {
+    background-color: #525863;
+    border-radius: 5px 5px;
+    border-top: 10px solid #525863;
+    border-bottom: 5px solid #525863;
+    padding: 20px;
+    height: 50px;
+    resize: vertical;
+    overflow-y: scroll;
+    margin-top: 20px;
+}
+
+.exprtio-transcript::-webkit-scrollbar {
+    width: 10px;
+    background-color: #525863;
+    border-radius: 5px;
+}
+
+.exprtio-transcript::-webkit-scrollbar-button:vertical {
+    background-color: red;
+    border: 1px dashed blue;
+}
+
+.exprtio-transcript::-webkit-scrollbar-track {
+    border-radius: 5px;
+}
+
+.exprtio-transcript::-webkit-scrollbar-track-piece {
+    border-radius: 5px;
+}
+
+.exprtio-transcript::-webkit-scrollbar-thumb {
+    background-color: #424853;
+    border-radius: 5px;
+}
+
+.exprtio-transcript::-webkit-scrollbar-corner {
+    background-color: #525863;
+    border-radius: 5px;
+}
+
+.exprtio-chatline {
+    line-height: 20px;
+}
+
+.exprtio-name {
+    font-weight: bold;
+    padding-right: 8px;
+    color: #8bb71a;
+}
+
 .exprtio-node {
     fill: #ccc;
     stroke: #fff;

@@ -49,7 +49,7 @@ EXPRTIO.debounce = function() {
     var now = (new Date()).getTime();
     var last = EXPRTIO.lastOperation;
     EXPRTIO.lastOperation = now;
-    if (now - last < 100) {
+    if (now - last < 500) {
         return true;
     }
     return false;
@@ -59,9 +59,26 @@ EXPRTIO.handleQueryInput = function(field) {
     if (EXPRTIO.debounce()) {
         return;
     }
+    EXPRTIO.addToTranscript("User", field.value);
     EXPRTIO.query(field.value, function (text) {
-        document.getElementById("exprt-response").innerHTML = text;
+        document.getElementById("exprtio-response").innerHTML = text;
+        EXPRTIO.addToTranscript("Expert", text);
     });
+}
+
+EXPRTIO.addToTranscript = function(name, text) {
+    var chatLine = document.createElement("div");
+    chatLine.classList.add("exprtio-chatline");
+    chatLine.innerHTML = "<span class='exprtio-name'>" + name + ":</span>" + text;
+    var chatTranscript = document.getElementById("exprtio-transcript");
+    chatTranscript.style.display = "block";
+    chatTranscript.append(chatLine);
+    EXPRTIO.scrollChatToBottom();
+}
+
+EXPRTIO.scrollChatToBottom = function() {
+    var chatTranscript = document.getElementById("exprtio-transcript");
+    chatTranscript.scrollTop = chatTranscript.scrollHeight;
 }
 
 EXPRTIO.refreshEntities = function() {
@@ -335,8 +352,8 @@ EXPRTIO.visualize = function(graph) {
     var graphNodes = graph.nodes;
     var graphLinks = graph.links;
 
-    d3.select('#exprt-visualization').select("svg").remove();
-    var svg = d3.select('#exprt-visualization').append('svg')
+    d3.select('#exprtio-visualization').select("svg").remove();
+    var svg = d3.select('#exprtio-visualization').append('svg')
         .attr('width', width)
         .attr('height', height);
 
@@ -425,3 +442,4 @@ EXPRTIO.getapiaiSessionID = function() {
 }
 
 EXPRTIO.refreshEntities();
+EXPRTIO.scrollChatToBottom();
