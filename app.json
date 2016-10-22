@@ -1,7 +1,7 @@
 {
   "name": "API.AI webhook test ASX",
   "description": "API.AI webhook demonstration ASX Data TEST!",
-  "repository": "https://github.com/chrisvenables/apiai-weather-webhook-sample/tree/asxdata-2",
+  "repository": "https://github.com/chrisvenables/apiai-weather-webhook-sample/tree/asxdata-3",
   "logo": "http://xvir.github.io/img/apiai.png",
   "keywords": ["api.ai", "natural language"]
 }
