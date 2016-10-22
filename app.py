@@ -95,7 +95,7 @@ def makeYqlQuery(req):
 
 
 def makeWebhookResult(data):
-    #code = data.get('code')
+    code = data.get('code')
     #if code is None:
     #    return {}
 
@@ -107,7 +107,7 @@ def makeWebhookResult(data):
     #if change_in_percent is None:
     #    return {}
 
-    speech = "The current price for bhp is 2"#+ code + " is " + last_price + " (percentage change " + change_in_percent
+    speech = "The current price for code(" + code + ") is 3"# + last_price + " (percentage change " + change_in_percent
 
     print("Response:")
     print(speech)
