@@ -107,7 +107,7 @@ def makeWebhookResult(data):
     #if change_in_percent is None:
     #    return {}
 
-    speech = "The current price for " + code + " is " + last_price# + " (percentage change " + change_in_percent + ")"
+    speech = "The current price for " + code + " is 4"# + last_price# + " (percentage change " + change_in_percent + ")"
 
     print("Response:")
     print(speech)
