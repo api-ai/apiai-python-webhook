@@ -99,15 +99,15 @@ def makeWebhookResult(data):
     #if code is None:
     #    return {}
 
-    #last_price = query.get('last_price')
+    last_price = data.get('last_price')
     #if last_price is None:
     #    return {}
 
-    #change_in_percent = result.get('change_in_percent')
+    change_in_percent = data.get('change_in_percent')
     #if change_in_percent is None:
     #    return {}
 
-    speech = "The current price for code(" + code + ") is 3"# + last_price + " (percentage change " + change_in_percent
+    speech = "The current price for " + code + " is " + last_price + " (percentage change " + change_in_percent + ")"
 
     print("Response:")
     print(speech)
