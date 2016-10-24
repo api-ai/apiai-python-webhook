@@ -106,11 +106,12 @@
 .exprtio-node {
     fill: #ccc;
     stroke: #fff;
-    stroke-width: 1px;
+    stroke-width: 2px;
 }
 
 .exprtio-nodelabel {
     font-weight: normal;
+    dominant-baseline: middle;
 }
 
 .exprtio-edge {

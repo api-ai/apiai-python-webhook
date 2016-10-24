@@ -400,7 +400,7 @@ EXPRTIO.visualize = function(graph) {
 
     var nodes = svg.selectAll('.exprtio-node')
         .data(graphNodes)
-        .enter().append('circle')
+        .enter().append('ellipse')
         .attr('class', 'exprtio-node')
         .call(force.drag)
         .on("click", function(d) { EXPRTIO.detailEdit(d); });
@@ -413,6 +413,7 @@ EXPRTIO.visualize = function(graph) {
             "x": function(d) { return d.x; },
             "y": function(d) { return d.y; },
             "class": "exprtio-nodelabel",
+            "text-anchor": "middle",
             "stroke": "black"
         })
        .text(function(d) { return d.name; } );
@@ -453,7 +454,9 @@ EXPRTIO.visualize = function(graph) {
         .text(function(d,i) { return d.name });
 
     var applyValues = function() {
-        nodes.attr('r', width / 100)
+        nodes
+            .attr('rx', function(d) { return width / 20; })
+            .attr('ry', function(d) { return width / 40; })
             .attr('cx', function(d) { return d.x; })
             .attr('cy', function(d) { return d.y; });
 
