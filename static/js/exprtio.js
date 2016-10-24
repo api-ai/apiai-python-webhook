@@ -375,7 +375,7 @@ EXPRTIO.visualize = function(graph) {
         .data(graphNodes)
         .enter().append('circle')
         .attr('class', 'exprtio-node')
-    
+        .call(force.drag);
 
     var nodelabels = svg.selectAll(".exprtio-nodelabel")
        .data(graphNodes)
