@@ -330,7 +330,7 @@ EXPRTIO.generateGraph = function(queryResults) {
     var nodes = [ ];
     for (i in neoNodes) {
         var node = neoNodes[i];
-        nodes.push({ x: 100, y: 100, name: node.properties.name });
+        nodes.push({ x: 100, y: 100, name: node.properties.name, properties: node.properties });
         nodeRefs[node.id] = i;
     }
 
@@ -344,6 +344,32 @@ EXPRTIO.generateGraph = function(queryResults) {
     return graph;
 }
 
+EXPRTIO.currentDetailSelection = null;
+EXPRTIO.detailEdit = function(item) {
+    if (item == EXPRTIO.currentDetailSelection) {
+        return;
+    }
+    EXPRTIO.currentDetailSelection = item;
+    var detailEditor = document.getElementById("exprtio-visualization-detail");
+    var detailHTML = "<div class='exprtio-detail-title'>" + item.name + "</div>";
+    var itemProperties = Object.keys(item.properties).sort();
+    for (i in itemProperties) {
+        var property = itemProperties[i];
+        detailHTML += "<div class='exprtio-detail-item'>" +
+            "<span class='name'>" + property + "</span>" +
+            "<input value='" + EXPRTIO.escape(item.properties[property]) + "'>" +
+            "</div>";
+    }
+    detailEditor.innerHTML = detailHTML;
+}
+
+EXPRTIO.escape = function(string) {
+    if (null == string) {
+        return null;
+    }
+    return string.replace(/'/g, "\\'");
+}
+
 EXPRTIO.visualize = function(graph) {
 
     var width = "600";
@@ -352,6 +378,7 @@ EXPRTIO.visualize = function(graph) {
     var graphNodes = graph.nodes;
     var graphLinks = graph.links;
 
+    d3.select('#exprtio-visualization').style("display", "flex")
     d3.select('#exprtio-visualization').select("svg").remove();
     var svg = d3.select('#exprtio-visualization').append('svg')
         .attr('width', width)
@@ -375,7 +402,8 @@ EXPRTIO.visualize = function(graph) {
         .data(graphNodes)
         .enter().append('circle')
         .attr('class', 'exprtio-node')
-        .call(force.drag);
+        .call(force.drag)
+        .on("click", function(d) { EXPRTIO.detailEdit(d); });
 
     var nodelabels = svg.selectAll(".exprtio-nodelabel")
        .data(graphNodes)
