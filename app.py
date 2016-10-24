@@ -3,13 +3,37 @@
 import urllib
 import json
 import os
+from string import Formatter
+import traceback
+from collections import namedtuple
+from neo4j.v1 import GraphDatabase, basic_auth
+from neo4j.v1.types import Node, Relationship
+from pattern.en import conjugate
 
 from flask import Flask
 from flask import request
 from flask import make_response
+from flask import render_template
+from flask import send_from_directory
+
+from grammar import grammify, objectify, parseEnglish
 
 # Flask app should start in global layout
 app = Flask(__name__)
+
+graphenedb_url = os.environ.get("GRAPHENEDB_WHITE_BOLT_URL")
+graphenedb_user = os.environ.get("GRAPHENEDB_WHITE_BOLT_USER")
+graphenedb_pass = os.environ.get("GRAPHENEDB_WHITE_BOLT_PASSWORD")
+print(graphenedb_url)
+print(graphenedb_user)
+print(graphenedb_pass)
+
+driver = GraphDatabase.driver(graphenedb_url, auth=basic_auth(graphenedb_user, graphenedb_pass))
+
+
+@app.route('/')
+def root():
+    return send_from_directory('static', "index.html")
 
 
 @app.route('/webhook', methods=['POST'])
@@ -28,57 +52,69 @@ def webhook():
     return r
 
 
+@app.route('/<path:path>')
+def send_js(path):
+    return send_from_directory('static', path)
+
+
 def processRequest(req):
-    if req.get("result").get("action") != "yahooWeatherForecast":
-        return {}
-    baseurl = "https://query.yahooapis.com/v1/public/yql?"
-    yql_query = makeYqlQuery(req)
-    if yql_query is None:
-        return {}
-    yql_url = baseurl + urllib.urlencode({'q': yql_query}) + "&format=json"
-    result = urllib.urlopen(yql_url).read()
-    data = json.loads(result)
-    res = makeWebhookResult(data)
+    res = {}
+    if req.get("result").get("action") == "sourceProductsFrom":
+        response = makeSourceProductsFromResponse(req)
+        res = makeWebhookResult(response, "sourceProductsFrom")
+    elif req.get("result").get("action") == "sellDevices":
+        response = makeSellDevicesResponse(req)
+        res = makeWebhookResult(response, "sellDevices")
+    #each function tests the request and returns data if it is the handler
+    try:
+        r = findQuery(req)
+        if r != None:
+            return r
+        r = parseEnglish(req)
+        if r != None:
+            return r
+    except Exception as err:
+        print("Error %s:" % (str(err)) )
+        traceback.print_exc()
+
     return res
 
 
-def makeYqlQuery(req):
+def makeSellDevicesResponse(req):
     result = req.get("result")
     parameters = result.get("parameters")
-    city = parameters.get("geo-city")
-    if city is None:
-        return None
+    device = parameters.get("device")
+    company = parameters.get("company")
+    print(device)
+    print(company)
+    query = "MATCH (comp:Company {alternateName: '%s'})-[:SELLS]->(devices{name: '%s'}) RETURN devices.name AS name" % (company, device)
+    print(query)
+    variable = "Webhook didn't work "
+    session = driver.session()
+    resultDB = list(session.run(query))
+    session.close()
+    for record in resultDB:
+        variable = "%s do sell %s! Would you like to buy one?" % (company, record["name"])
+    return variable
 
-    return "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text='" + city + "')"
+
+def makeSourceProductsFromResponse(req):
+    result = req.get("result")
+    parameters = result.get("parameters")
+    country = parameters.get("geo-country")
+    print(country)
+    if country == 'United States of America':
+        return 'Tech Data (Preferred), Ingram and Apple Direct.'
+    if country == 'Canada':
+        return 'Synnex Canada (Preferred), Ingram Canada and BlueStar Canada (AppleCare exclusively).'
+    if country == 'Europe':
+        return 'cheryl_mepham@shi.com is our Mobility Specialist out of the UK who can help assist.'
+    return "Test Webhook"
 
 
-def makeWebhookResult(data):
-    query = data.get('query')
-    if query is None:
-        return {}
+def makeWebhookResult(data, source):
 
-    result = query.get('results')
-    if result is None:
-        return {}
-
-    channel = result.get('channel')
-    if channel is None:
-        return {}
-
-    item = channel.get('item')
-    location = channel.get('location')
-    units = channel.get('units')
-    if (location is None) or (item is None) or (units is None):
-        return {}
-
-    condition = item.get('condition')
-    if condition is None:
-        return {}
-
-    # print(json.dumps(item, indent=4))
-
-    speech = "Today in " + location.get('city') + ": " + condition.get('text') + \
-             ", the temperature is " + condition.get('temp') + " " + units.get('temperature')
+    speech = data
 
     print("Response:")
     print(speech)
@@ -88,8 +124,76 @@ def makeWebhookResult(data):
         "displayText": speech,
         # "data": data,
         # "contextOut": [],
-        "source": "apiai-weather-webhook-sample"
+        "source": source
     }
+
+
+def findQuery(req):
+    action = req.get("result").get("action")
+    queryQuery = "MATCH (QUERY:Query {name: '%s'}) RETURN QUERY AS query" % (action)
+    resultList = grapheneQuery(queryQuery)
+
+    if len(resultList) == 0:
+        return None
+
+    parameters = req.get("result").get("parameters")
+    foundQuery = resultList[0]["query"].properties
+
+    query = foundQuery["query"]
+    queryArgs = foundQuery["queryArgs"]
+    #failedMessage message must take the same arguments as the query itself
+    failedMessage = foundQuery.get("fail") or "No data found."
+    formatter = foundQuery["formatter"]
+
+    queryArgList = []
+    for arg in queryArgs:
+        components = arg.split(".")
+        if components[0] == "parameters":
+            queryArgList.append(parameters.get(components[1]))
+
+    print("Query %s with arguments %s" % (query, queryArgList))
+
+    concreteQuery = query % tuple(queryArgList)
+
+    print("Expands to %s " % (concreteQuery))
+
+    resultList = grapheneQuery(concreteQuery)
+
+    speech = ""
+    if len(resultList) == 0:
+        speech += grammify(failedMessage, p = objectify(parameters))
+
+    for record in resultList:
+        print(record)
+        context = extractRecord(record)
+        print("Applied to formatter %s with arguments %s" % (formatter, context))
+        speech += grammify(formatter, p = objectify(parameters), **context)
+
+    res = {
+        "speech": speech,
+        "displayText": speech,
+        "source": action
+    }
+
+    return res
+
+
+def extractRecord(record):
+    contextDictionary = { }
+    for key in record:
+        item = record[key]
+        if hasattr(item, 'properties'):
+            contextDictionary[key] = objectify(item.properties)
+
+    return contextDictionary
+
+
+def grapheneQuery(query):
+    print(query)
+    session = driver.session()
+    resultDB = session.run(query)
+    session.close()
+    return list(resultDB)
 
 
 if __name__ == '__main__':

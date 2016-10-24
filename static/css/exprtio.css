@@ -1,0 +1,120 @@
+
+.ppt-section-header input {
+    color: white;
+    background-color: rgb(34, 37, 42);
+    font-family: Asap, sans-serif;
+    font-size: 14px;
+    margin: 8px;
+}
+
+.exprtio-header {
+    background-image: url('image/exprtio-small.png');
+    background-size: 300px;
+    height: 100px;
+}
+
+.auto-height {
+    height: auto;
+}
+
+.exprtio-visualization {
+    display: flex;
+}
+
+.exprtio-detail {
+    flex-grow: 100;
+    order: 2;
+    border: 1px solid #2e3138;
+    border-radius: 5px 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-left: 10px;
+    line-height: 40px;
+}
+
+.exprtio-detail-title {
+    color: #8bb71a;
+}
+
+.exprtio-detail-item {
+    display: flex;
+    padding-left: 15px;
+}
+
+.exprtio-detail-item input {
+    flex-grow: 100;
+    padding-left: 5px;
+}
+
+.exprtio-response {
+    line-height: 30px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+.exprtio-transcript {
+    background-color: #525863;
+    border-radius: 5px 5px;
+    border-top: 10px solid #525863;
+    border-bottom: 5px solid #525863;
+    padding: 20px;
+    height: 50px;
+    resize: vertical;
+    overflow-y: scroll;
+    margin-top: 20px;
+}
+
+.exprtio-transcript::-webkit-scrollbar {
+    width: 10px;
+    background-color: #525863;
+    border-radius: 5px;
+}
+
+.exprtio-transcript::-webkit-scrollbar-button:vertical {
+    background-color: red;
+    border: 1px dashed blue;
+}
+
+.exprtio-transcript::-webkit-scrollbar-track {
+    border-radius: 5px;
+}
+
+.exprtio-transcript::-webkit-scrollbar-track-piece {
+    border-radius: 5px;
+}
+
+.exprtio-transcript::-webkit-scrollbar-thumb {
+    background-color: #424853;
+    border-radius: 5px;
+}
+
+.exprtio-transcript::-webkit-scrollbar-corner {
+    background-color: #525863;
+    border-radius: 5px;
+}
+
+.exprtio-chatline {
+    line-height: 20px;
+}
+
+.exprtio-name {
+    font-weight: bold;
+    padding-right: 8px;
+    color: #8bb71a;
+}
+
+.exprtio-node {
+    fill: #ccc;
+    stroke: #fff;
+    stroke-width: 2px;
+}
+
+.exprtio-nodelabel {
+    font-weight: normal;
+    dominant-baseline: middle;
+}
+
+.exprtio-edge {
+    stroke: #777;
+    stroke-width: 2px;
+}

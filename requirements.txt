@@ -1,1 +1,4 @@
 Flask==0.10.1
+neo4j-driver
+pattern
+

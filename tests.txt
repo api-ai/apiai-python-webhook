@@ -1,0 +1,105 @@
+
+Tests:
+
+curl -H "Content-Type: application/json" -X POST -d '{ "result": { "parameters": { "vendor": "SHI", "product": "iPad", "offering": "sell" }, "action": "offeringTriple" } }' http://localhost:5000/webhook
+
+curl -H "Content-Type: application/json" -X POST -d '{ "result": { "parameters": { "part": "RAM", "brand": "Apple" }, "action": "partLocator" } }' http://localhost:5000/webhook
+
+curl -H "Content-Type: application/json" -X POST -d '{ "result": { "parameters": { "vendor": "Safeway", "anything": "Asia", "offering": "SHIPS_TO" }, "action": "offeringPath" } }' http://localhost:5000/webhook
+
+curl -H "Content-Type: application/json" -X POST -d '{ "result": { "resolvedQuery": "The mouse pointer does not move", "action": "fallback" } }' http://localhost:5000/webhook
+
+Notes:
+
+The full JSON body of a webhook request is as follows:
+
+ {
+     "sessionId": "f8e3a3b4-94c4-4a76-a230-c4db280a7ff6", 
+     "status": {
+         "errorType": "success", 
+         "code": 200
+     }, 
+     "result": {
+         "actionIncomplete": false, 
+         "parameters": {
+             "vendor": "SHI", 
+             "product": "iPad", 
+             "offering": "sell"
+         }, 
+         "fulfillment": {
+             "speech": "You must reach agreement on sell ing your 
+         }, 
+         "contexts": [], 
+         "source": "agent", 
+         "action": "offeringTriple", 
+         "score": 0.9879364892911654, 
+         "resolvedQuery": "Does SHI sell iPad?", 
+         "speech": "", 
+         "metadata": {
+             "webhookUsed": "true", 
+             "intentId": "bda08571-910d-4e2d-880d-260c1af1342f", 
+             "intentName": "offeringTriple"
+         }
+     }, 
+     "id": "95baf840-bf37-4fab-9ef1-c8a75f71e90c", 
+     "timestamp": "2016-10-04T15:59:31.261Z"
+ }
+
+The implementation does not inspect all parameters, so as a simple test can be reduced to:
+
+{
+    "result": {
+        "parameters": {
+            "vendor": "SHI",
+            "product": "iPad",
+            "offering": "sell"
+        },
+        "action": "offeringTriple"
+    }
+}
+
+As curl:
+
+curl -H "Content-Type: application/json" -X POST -d '{ "result": { "parameters": { "vendor": "SHI", "product": "iPad", "offering": "sell" }, "action": "offeringTriple" } }' http://localhost:5000/webhook
+
+
+
+
+
+
+Offering Path example:
+
+{
+    "sessionId": "f8e3a3b4-94c4-4a76-a230-c4db280a7ff6", 
+    "id": "6c73a74a-8d41-4fa6-82cd-e6dbd6bbddac", 
+    "status": {
+        "errorType": "success", 
+        "code": 200
+    }, 
+    "timestamp": "2016-10-04T17:21:09.869Z", 
+    "result": {
+        "score": 0.9966535745378575, 
+        "actionIncomplete": false, 
+        "speech": "", 
+        "metadata": {
+            "webhookUsed": "true", 
+            "intentId": "1c07253a-0bfb-4c18-b432-cc426a95107b", 
+            "intentName": "offeringPath"
+        }, 
+        "parameters": {
+            "offering": "SHIPS_TO", 
+            "vendor": "Safeway", 
+            "anything": "Asia"
+        }, 
+        "contexts": [], 
+        "source": "agent", 
+        "resolvedQuery": "How does Safeway ship to Asia?", 
+        "action": "offeringPath", 
+        "fulfillment": {
+            "speech": "It's complicated, but I'm sure somehow 
+        }
+    }
+}
+
+curl -H "Content-Type: application/json" -X POST -d '{ "result": { "parameters": { "vendor": "Safeway", "anything": "Asia", "offering": "SHIPS_TO" }, "action": "offeringPath" } }' http://localhost:5000/webhook
+
