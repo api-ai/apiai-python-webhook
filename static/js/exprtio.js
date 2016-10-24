@@ -389,8 +389,43 @@ EXPRTIO.visualize = function(graph) {
         })
        .text(function(d) { return d.name; } );
 
+    var edgepaths = svg.selectAll(".exprtio-edgepath")
+        .data(graphLinks)
+        .enter()
+        .append('path')
+        .attr({
+            'd': function(d) {
+                return 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y
+            },
+            'class': 'edgepath',
+            'fill-opacity': 0,
+            'stroke-opacity': 0,
+            'fill': 'blue',
+            'stroke': 'red',
+            'id': function(d,i) { return 'edgepath' + i }
+        })
+        .style("pointer-events", "none");
+
+    var edgelabels = svg.selectAll(".edgelabel")
+        .data(graphLinks)
+        .enter()
+        .append('text')
+        .style("pointer-events", "none")
+        .attr({'class':'edgelabel',
+               'id': function(d,i) { return 'edgelabel' + i },
+               'dx': 80,
+               'dy': 0,
+               'font-size': 10,
+               'fill': '#aaa'
+        });
+
+    edgelabels.append('textPath')
+        .attr('xlink:href',function(d,i) { return '#edgepath' + i })
+        .style("pointer-events", "none")
+        .text(function(d,i) { return d.name });
+
     var applyValues = function() {
-        nodes.attr('r', width/100)
+        nodes.attr('r', width / 100)
             .attr('cx', function(d) { return d.x; })
             .attr('cy', function(d) { return d.y; });
 
@@ -401,6 +436,23 @@ EXPRTIO.visualize = function(graph) {
 
         nodelabels.attr("x", function(d) { return d.x; })
                   .attr("y", function(d) { return d.y; });
+
+        edgepaths.attr('d', function(d) {
+            var path = 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y;
+            return path
+        });
+
+        edgelabels.attr('transform',function(d,i) {
+            if (d.target.x<d.source.x) {
+                bbox = this.getBBox();
+                rx = bbox.x+bbox.width / 2;
+                ry = bbox.y+bbox.height / 2;
+                return 'rotate(180 ' + rx + ' ' + ry + ')';
+            } else {
+                return 'rotate(0)';
+            }
+        });
+
     };
 
     force.on('end', applyValues);
