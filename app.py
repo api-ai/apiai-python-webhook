@@ -31,8 +31,8 @@ def webhook():
 def processRequest(req):
     if req.get("result").get("action") != "current_price":
         return {}
-    url = "http://data.asx.com.au/data/1/share/BHP/"
-    #url = makeURL(req)
+    #url = "http://data.asx.com.au/data/1/share/BHP/"
+    url = makeURL(req)
     if url is None:
         return {}
     
@@ -49,8 +49,7 @@ def makeURL(req):
     stock = parameters.get("stock")
     if stock is None:
         return None
-
-    fullURL = baseurl + urllib.urlencode({'q': stock}) + "/"
+    fullURL = baseurl + stock + "/"
     return fullURL
 
 
