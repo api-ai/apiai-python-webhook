@@ -30,10 +30,21 @@ def webhook():
 
 def processRequest(req):
     if req.get("result").get("action") != "current_price":
-        return {}
+        speech = "couldn't get the action right"
+        return {
+            "speech": speech,
+            "displayText": speech,
+            "source": "apiai-webhook-test-asxdata-cv"
+        }
+
     url = makeURL(req)
     if url is None:
-        return {}
+        speech = "couldn't get the url right"
+        return {
+            "speech": speech,
+            "displayText": speech,
+            "source": "apiai-webhook-test-asxdata-cv"
+        }
     #yql_url = "http://data.asx.com.au/data/1/share/BHP/"
     result = urllib.urlopen(url).read()
     data = json.loads(result)
@@ -95,16 +106,16 @@ def makeURL(req):
 
 def makeWebhookResult(data):
     code = data.get('code')
-    if code is None:
-        return {}
+    #if code is None:
+    #    return {}
 
     last_price = data.get('last_price')
-    if last_price is None:
-        return {}
+    #if last_price is None:
+    #    return {}
 
     change_in_percent = data.get('change_in_percent')
-    if change_in_percent is None:
-        return {}
+    #if change_in_percent is None:
+    #    return {}
 
     speech = "The current price for " + code + " is " + str(last_price) + " (percentage change " + str(change_in_percent) + ")"
 
