@@ -29,15 +29,15 @@ def webhook():
 
 
 def processRequest(req):
-    if req.get("result").get("action") != "yahooWeatherForecast":
+    if req.get("result").get("action") != "current_price":
         return {}
-    #baseurl = "https://query.yahooapis.com/v1/public/yql?"
-    #yql_query = makeYqlQuery(req)
-    #if yql_query is None:
-    #    return {}
-    #yql_url = baseurl + urllib.urlencode({'q': yql_query}) + "&format=json"
-    yql_url = "http://data.asx.com.au/data/1/share/BHP/"
-    result = urllib.urlopen(yql_url).read()
+    baseurl = "http://data.asx.com.au/data/1/share/"
+    stockurl = makeYqlQuery(req)
+    if stockurl is None:
+        return {}
+    url = baseurl + urllib.urlencode({'q': stock}) + "/"
+    #yql_url = "http://data.asx.com.au/data/1/share/BHP/"
+    result = urllib.urlopen(url).read()
     data = json.loads(result)
     res = makeWebhookResult(data)
     return res
@@ -46,12 +46,11 @@ def processRequest(req):
 def makeYqlQuery(req):
     result = req.get("result")
     parameters = result.get("parameters")
-    city = parameters.get("geo-city")
-    if city is None:
+    city = parameters.get("stock")
+    if stock is None:
         return None
 
-    return "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text='" + city + "')"
-
+    return stock
 
 #def makeWebhookResult(data):
 #    query = data.get('query')
@@ -96,16 +95,16 @@ def makeYqlQuery(req):
 
 def makeWebhookResult(data):
     code = data.get('code')
-    #if code is None:
-    #    return {}
+    if code is None:
+        return {}
 
     last_price = data.get('last_price')
-    #if last_price is None:
-    #    return {}
+    if last_price is None:
+        return {}
 
     change_in_percent = data.get('change_in_percent')
-    #if change_in_percent is None:
-    #    return {}
+    if change_in_percent is None:
+        return {}
 
     speech = "The current price for " + code + " is " + str(last_price) + " (percentage change " + str(change_in_percent) + ")"
 
