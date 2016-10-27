@@ -31,11 +31,9 @@ def webhook():
 def processRequest(req):
     if req.get("result").get("action") != "current_price":
         return {}
-    baseurl = "http://data.asx.com.au/data/1/share/"
-    stockurl = makeYqlQuery(req)
-    if stockurl is None:
+    url = makeURL(req)
+    if url is None:
         return {}
-    url = baseurl + urllib.urlencode({'q': stock}) + "/"
     #yql_url = "http://data.asx.com.au/data/1/share/BHP/"
     result = urllib.urlopen(url).read()
     data = json.loads(result)
@@ -43,14 +41,16 @@ def processRequest(req):
     return res
 
 
-def makeYqlQuery(req):
+def makeURL(req):
+    baseurl = "http://data.asx.com.au/data/1/share/"
     result = req.get("result")
     parameters = result.get("parameters")
-    city = parameters.get("stock")
+    stock = parameters.get("stock")
     if stock is None:
         return None
 
-    return stock
+    fullURL = baseurl + urllib.urlencode({'q': stock}) + "/"
+    return fullURL
 
 #def makeWebhookResult(data):
 #    query = data.get('query')
