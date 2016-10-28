@@ -15,115 +15,53 @@ app = Flask(__name__)
 @app.route('/webhook', methods=['POST'])
 def webhook():
     req = request.get_json(silent=True, force=True)
-
-    print("Request:")
-    print(json.dumps(req, indent=4))
-
-    res = processRequest(req)
-
+    res = processRequest(req)   #Receive data from api.ai and retrieve request data
     res = json.dumps(res, indent=4)
-    # print(res)
-    r = make_response(res)
+    r = make_response(res)      #Use retrieved data to form response to api.ai
     r.headers['Content-Type'] = 'application/json'
     return r
 
 
-def processRequest(req):
-    if req.get("result").get("action") != "yahooWeatherForecast":
+def processRequest(req):    #Parse data provided to script and retrieve request data
+    if req.get("result").get("action") != "current_price":
         return {}
-    #baseurl = "https://query.yahooapis.com/v1/public/yql?"
-    #yql_query = makeYqlQuery(req)
-    #if yql_query is None:
-    #    return {}
-    #yql_url = baseurl + urllib.urlencode({'q': yql_query}) + "&format=json"
-    yql_url = "http://data.asx.com.au/data/1/share/BHP/"
-    result = urllib.urlopen(yql_url).read()
-    data = json.loads(result)
-    res = makeWebhookResult(data)
+    #url = "http://data.asx.com.au/data/1/share/BHP/"
+    url = makeURL(req)  #construct request url
+    if url is None:
+        return {}
+    result = urllib.urlopen(url).read() #read target url
+    data = json.loads(result)   #grab target url json data
+    res = makeWebhookResult(data)   #process data to pass back to api.ai
     return res
 
 
-def makeYqlQuery(req):
-    result = req.get("result")
+def makeURL(req):   #construct request url
+    baseurl = "http://data.asx.com.au/data/1/share/"    #url root
+    result = req.get("result")      #grab data from api.ai input
     parameters = result.get("parameters")
-    city = parameters.get("geo-city")
-    if city is None:
+    stock = parameters.get("ASX_stock")
+    if stock is None:
         return None
-
-    return "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text='" + city + "')"
-
-
-#def makeWebhookResult(data):
-#    query = data.get('query')
-#    if query is None:
-#        return {}
-#
-#    result = query.get('results')
-#    if result is None:
-#        return {}
-#
-#    channel = result.get('channel')
-#    if channel is None:
-#        return {}
-#
-#    item = channel.get('item')
-#    location = channel.get('location')
-#    units = channel.get('units')
-#    if (location is None) or (item is None) or (units is None):
-#        return {}
-#
-#    condition = item.get('condition')
-#    if condition is None:
-#        return {}
-#
-#    # print(json.dumps(item, indent=4))
-#
-#    speech = "Today in " + location.get('city') + ": " + condition.get('text') + \
-#             ", the temperature is " + condition.get('temp') + " " + units.get('temperature')
-#
-#    print("Response:")
-#    print(speech)
-#
-#    return {
-#        "speech": speech,
-#        "displayText": speech,
-#        # "data": data,
-#        # "contextOut": [],
-#        "source": "apiai-weather-webhook-sample"
-#    }
+    fullURL = baseurl + stock + "/"     #build url
+    return fullURL
 
 
-
-def makeWebhookResult(data):
-    code = data.get('code')
-    #if code is None:
-    #    return {}
-
+def makeWebhookResult(data):    #process data to pass back to api.ai
+    code = data.get('code')     #get data
+    if code is None:
+        return {}
     last_price = data.get('last_price')
-    #if last_price is None:
-    #    return {}
-
+    if last_price is None:
+        return {}
     change_in_percent = data.get('change_in_percent')
-    #if change_in_percent is None:
-    #    return {}
-
+    if change_in_percent is None:
+        return {}
+    #build output string
     speech = "The current price for " + code + " is " + str(last_price) + " (percentage change " + str(change_in_percent) + ")"
-
-    print("Response:")
-    print(speech)
-
-    return {
-        "speech": speech,
-        "displayText": speech,
-        # "data": data,
-        # "contextOut": [],
-        "source": "apiai-webhook-test-asxdata-cv"
-    }
+    return {"speech": speech, "displayText": speech, "source": "cv-asxdata"}
 
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
-
     print "Starting app on port %d" % port
-
     app.run(debug=False, port=port, host='0.0.0.0')
