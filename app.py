@@ -31,11 +31,11 @@ def webhook():
 def processRequest(req):
     if req.get("result").get("action") != "yahooWeatherForecast":
         return {}
-    baseurl = "https://query.yahooapis.com/v1/public/yql?&format=json&"
+    baseurl = "https://query.yahooapis.com/v1/public/yql?"
     yql_query = makeYqlQuery(req)
     if yql_query is None:
         return {}
-    yql_url = baseurl + urllib.urlencode({'q': yql_query})
+    yql_url = baseurl + urllib.urlencode({'q': yql_query}) + "&format=json"
     result = urllib.urlopen(yql_url).read()
     data = json.loads(result)
     res = makeWebhookResult(data)
@@ -49,7 +49,7 @@ def makeYqlQuery(req):
     if city is None:
         return None
 
-    return "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text='" + city + "') and u='c'"
+    return "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text='" + city + "')"
 
 
 def makeWebhookResult(data):
@@ -78,7 +78,7 @@ def makeWebhookResult(data):
     # print(json.dumps(item, indent=4))
 
     speech = "Today in " + location.get('city') + ": " + condition.get('text') + \
-             ", the temperature is " + condition.get('temp') + " º" + units.get('temperature')
+             ", the temperature is " + condition.get('temp') + " " + units.get('temperature')
 
     print("Response:")
     print(speech)
