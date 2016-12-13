@@ -36,7 +36,12 @@ def processRequest(req):
     if yql_query is None:
         return {}
     yql_url = baseurl + urllib.urlencode({'q': yql_query}) + "&format=json"
+    print(yql_url)
+
     result = urllib.urlopen(yql_url).read()
+    print("yql result: ")
+    print(result)
+
     data = json.loads(result)
     res = makeWebhookResult(data)
     return res
@@ -83,10 +88,69 @@ def makeWebhookResult(data):
     print("Response:")
     print(speech)
 
+    slack_message = {
+        "text": speech,
+        "attachments": [
+            {
+                "title": channel.get('title'),
+                "title_link": channel.get('link'),
+                "color": "#36a64f",
+
+                "fields": [
+                    {
+                        "title": "Condition",
+                        "value": "Temp " + condition.get('temp') +
+                                 " " + units.get('temperature'),
+                        "short": "false"
+                    },
+                    {
+                        "title": "Wind",
+                        "value": "Speed: " + channel.get('wind').get('speed') +
+                                 ", direction: " + channel.get('wind').get('direction'),
+                        "short": "true"
+                    },
+                    {
+                        "title": "Atmosphere",
+                        "value": "Humidity " + channel.get('atmosphere').get('humidity') +
+                                 " pressure " + channel.get('atmosphere').get('pressure'),
+                        "short": "true"
+                    }
+                ],
+
+                "thumb_url": "http://l.yimg.com/a/i/us/we/52/" + condition.get('code') + ".gif"
+            }
+        ]
+    }
+
+    facebook_message = {
+        "attachment": {
+            "type": "template",
+            "payload": {
+                "template_type": "generic",
+                "elements": [
+                    {
+                        "title": channel.get('title'),
+                        "image_url": "http://l.yimg.com/a/i/us/we/52/" + condition.get('code') + ".gif",
+                        "subtitle": speech,
+                        "buttons": [
+                            {
+                                "type": "web_url",
+                                "url": channel.get('link'),
+                                "title": "View Details"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+
+    print(json.dumps(slack_message))
+
     return {
         "speech": speech,
         "displayText": speech,
-        # "data": data,
+        "data": {"slack": slack_message, "facebook": facebook_message},
         # "contextOut": [],
         "source": "apiai-weather-webhook-sample"
     }
