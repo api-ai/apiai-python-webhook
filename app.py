@@ -80,8 +80,10 @@ def makeWebhookResult(data):
 
     # print(json.dumps(item, indent=4))
 
-    speech = "Today in " + location.get('city') + ": " + condition.get('text') + \
-             ", the temperature is " + condition.get('temp') + " " + units.get('temperature')
+    speech = "Ok, the weather in " + location.get('city') + " is " + condition.get('text') +
+	", the temperature is " + condition.get('temp') + " " + units.get('temperature') + ", as of now." 
+	+ " More option? 1_ Save city as home. 2_ Weather report of a time period. 3_ Weather advice."
+	 
 
     print("Response:")
     print(speech)
