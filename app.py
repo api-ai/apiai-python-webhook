@@ -3,10 +3,11 @@
 from __future__ import print_function
 from future.standard_library import install_aliases
 install_aliases()
-
+from wikiapi import WikiApi
 from urllib.parse import urlparse, urlencode
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError
+#import duckduckgo
 
 import json
 import os
@@ -17,9 +18,31 @@ from flask import make_response
 
 # Flask app should start in global layout
 app = Flask(__name__)
-
+wiki = WikiApi()
+wiki = WikiApi({ 'locale' : 'en'}) # to specify your locale, 'en' is default
 
 @app.route('/webhook', methods=['POST'])
+@app.route('/webhook1', methods=['POST'])
+
+
+def webhook1():
+
+    req = request.get_json(silent=True, force=True)
+
+    print("Request:")
+    print(json.dumps(req, indent=4))
+    res = pr(req)
+
+    res = json.dumps(res, indent=4)
+    # print(res)
+    print("Response:")
+    r = make_response(res)    
+     
+    r.headers['Content-Type'] = 'application/json'
+    
+
+    return r
+
 def webhook():
     req = request.get_json(silent=True, force=True)
 
@@ -34,10 +57,28 @@ def webhook():
     r.headers['Content-Type'] = 'application/json'
     return r
 
+def pr(req):
+     
+    
+    result = req.get("result")
+    parameters = result.get("parameters")
+    query = parameters.get("q")
+    results = wiki.find(query) 
+    article = wiki.get_article(results[0])
+    result = article.summary 
+  # # result1 = duckduckgo.get_zci(query)
+    
+    return {
+        "speech": result,
+        "displayText": query,
+     #   "data": result1,
+         "contextOut": [],
+        "source": "apiai-weather-webh29ook-sample"
+    }    
+
 
 def processRequest(req):
-    if req.get("result").get("action") != "yahooWeatherForecast":
-        return {}
+  
     baseurl = "https://query.yahooapis.com/v1/public/yql?"
     yql_query = makeYqlQuery(req)
     if yql_query is None:
@@ -95,7 +136,7 @@ def makeWebhookResult(data):
         "displayText": speech,
         # "data": data,
         # "contextOut": [],
-        "source": "apiai-weather-webhook-sample"
+        "source": "apiai-weather-webh26ook-sample"
     }
 
 
