@@ -58,7 +58,8 @@ def webhook():
         log.error('Unexpected action.')
 
     print('Action: ' + action)
-    print('Response: ' + res)
+    print('Response:')
+    print(res)
 
     return make_response(jsonify({'fulfillmentText': res}))
 
@@ -78,14 +79,17 @@ def weather(req):
     # validate request parameters, return an error if there are issues
     error, forecast_params = validate_params(parameters)
     if error:
-        return error
+        print(error, forecast_params)
+        return str(error)
 
     # create a forecast object which retrieves the forecast from a external API
     try:
         forecast = Forecast(forecast_params)
     # return an error if there is an error getting the forecast
     except (ValueError, IOError) as error:
-        return error
+        print('Forecast error')
+        print(error, forecast_params)
+        return str(error)
 
     # If the user requests a datetime period (a date/time range), get the
     # response
